@@ -1,17 +1,19 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.AbsenceEntity
+import com.example.playcoach.data.repositories.AbsenceRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class AbsenceViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = AppDatabase.getRepository(application).absenceRepository
+@HiltViewModel
+class AbsenceViewModel @Inject constructor(
+    private val repository: AbsenceRepository
+) : ViewModel() {
 
     private val _attendanceByDate = MutableStateFlow<List<AbsenceEntity>>(emptyList())
     val attendanceByDate: StateFlow<List<AbsenceEntity>> = _attendanceByDate.asStateFlow()

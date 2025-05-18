@@ -60,7 +60,9 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
 
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -69,7 +71,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // PDF
-    implementation("com.itextpdf:itext7-core:8.0.2")
+    implementation(libs.itext7.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

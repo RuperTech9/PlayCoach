@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.viewmodels.AbsenceViewModel
 import com.example.playcoach.viewmodels.EventViewModel
@@ -20,7 +21,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun PlayersAttendance(
+fun PlayersAbsence(
     onNavigateBack: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToProfile: () -> Unit,
@@ -31,11 +32,12 @@ fun PlayersAttendance(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     teamName: String?,
-
-    playerViewModel: PlayerViewModel,
-    eventViewModel: EventViewModel,
-    absenceViewModel: AbsenceViewModel
 ) {
+
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+    val eventViewModel: EventViewModel = hiltViewModel()
+    val absenceViewModel: AbsenceViewModel = hiltViewModel()
+
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
             playerViewModel.loadPlayersByTeam(teamName)

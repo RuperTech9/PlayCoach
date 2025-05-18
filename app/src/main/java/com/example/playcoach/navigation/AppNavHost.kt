@@ -222,11 +222,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("player_attendance") {
-            val playerViewModel: PlayerViewModel = viewModel()
-            val eventViewModel: EventViewModel = viewModel()
-            val absenceViewModel: AbsenceViewModel = viewModel()
-
-            PlayersAttendance(
+            PlayersAbsence(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
@@ -236,10 +232,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value,
-                playerViewModel = playerViewModel,
-                eventViewModel = eventViewModel,
-                absenceViewModel = absenceViewModel
+                teamName = selectedTeam.value
             )
         }
 

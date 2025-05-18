@@ -2,9 +2,12 @@ package com.example.playcoach.data.repositories
 
 import com.example.playcoach.data.daos.AbsenceDao
 import com.example.playcoach.data.entities.AbsenceEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class AbsenceRepository(private val absenceDao: AbsenceDao) {
+class AbsenceRepository @Inject constructor(
+    private val absenceDao: AbsenceDao
+) {
 
     fun getAttendanceByDate(date: String): Flow<List<AbsenceEntity>> {
         return absenceDao.getAttendanceByDate(date)
