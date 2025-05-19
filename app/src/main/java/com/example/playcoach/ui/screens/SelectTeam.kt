@@ -20,8 +20,6 @@ import com.example.playcoach.R
 import com.example.playcoach.data.entities.TeamEntity
 import com.example.playcoach.viewmodels.EventViewModel
 import com.example.playcoach.viewmodels.MatchdayViewModel
-import com.example.playcoach.viewmodels.PlayerStatViewModel
-import com.example.playcoach.viewmodels.PlayerViewModel
 import com.example.playcoach.viewmodels.TeamViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

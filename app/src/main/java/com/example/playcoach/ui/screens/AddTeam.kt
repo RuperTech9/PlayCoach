@@ -56,7 +56,7 @@ fun AddTeam(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = newTeamName.isNotBlank()
             ) {
-                Text("Save")
+                Text("Guardar")
             }
         }
     }
