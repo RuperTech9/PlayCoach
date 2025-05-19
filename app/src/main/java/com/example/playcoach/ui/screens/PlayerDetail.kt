@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.R
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.viewmodels.*
@@ -33,17 +34,18 @@ enum class MatchdayFilter(val label: String) {
 @Composable
 fun PlayerDetail(
     playerId: Int,
-    viewModel: PlayerDetailViewModel,
-    absenceViewModel: AbsenceViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val playerDetailViewModel: PlayerDetailViewModel = hiltViewModel()
+    val absenceViewModel: AbsenceViewModel = hiltViewModel()
+
     LaunchedEffect(playerId) {
         if (playerId != -1) {
-            viewModel.loadPlayerAndStats(playerId)
+            playerDetailViewModel.loadPlayerAndStats(playerId)
         }
     }
 
-    val state = viewModel.playerDetail.collectAsState().value
+    val state = playerDetailViewModel.playerDetail.collectAsState().value
 
     Scaffold(
         topBar = {

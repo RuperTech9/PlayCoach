@@ -33,7 +33,6 @@ fun PlayersAbsence(
     onNavigateToOthers: () -> Unit,
     teamName: String?,
 ) {
-
     val playerViewModel: PlayerViewModel = hiltViewModel()
     val eventViewModel: EventViewModel = hiltViewModel()
     val absenceViewModel: AbsenceViewModel = hiltViewModel()

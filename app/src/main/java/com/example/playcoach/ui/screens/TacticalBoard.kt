@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.playcoach.R
 import com.example.playcoach.ui.components.BaseScreen
@@ -28,9 +29,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TacticalBoard(
-    teamName: String?,
-    viewModel: FormationViewModel = viewModel(),
-    playerViewModel: PlayerViewModel = viewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToProfile: () -> Unit,
@@ -39,13 +37,17 @@ fun TacticalBoard(
     onNavigateToSquad: () -> Unit,
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
-    onNavigateToOthers: () -> Unit
+    onNavigateToOthers: () -> Unit,
+    teamName: String?
 ) {
+    val formationViewModel: FormationViewModel = hiltViewModel()
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+
     val scope = rememberCoroutineScope()
     val teamPlayers = playerViewModel.players.collectAsState().value
-    val selectedFormation = viewModel.selectedFormation.collectAsState().value
-    val savedPositions = viewModel.positions.collectAsState().value
-    val formations = viewModel.formations.collectAsState().value
+    val selectedFormation = formationViewModel.selectedFormation.collectAsState().value
+    val savedPositions = formationViewModel.positions.collectAsState().value
+    val formations = formationViewModel.formations.collectAsState().value
 
     var players by remember { mutableStateOf<List<Pair<Int, DpOffset>>>(emptyList()) }
     var formationName by remember { mutableStateOf("") }
@@ -67,7 +69,7 @@ fun TacticalBoard(
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
             playerViewModel.loadPlayersByTeam(teamName)
-            viewModel.loadFormationsByTeam(teamName)
+            formationViewModel.loadFormationsByTeam(teamName)
         }
     }
 
@@ -122,10 +124,10 @@ fun TacticalBoard(
                         confirmButton = {
                             TextButton(onClick = {
                                 scope.launch {
-                                    viewModel.deleteFormation(formationToDelete!!)
-                                    viewModel.loadFormationsByTeam(teamName ?: "")
+                                    formationViewModel.deleteFormation(formationToDelete!!)
+                                    formationViewModel.loadFormationsByTeam(teamName ?: "")
                                     if (selectedFormation?.id == formationToDelete?.id) {
-                                        viewModel.clearSelection()
+                                        formationViewModel.clearSelection()
                                     }
                                     showDialog = false
                                     expanded = false
@@ -171,7 +173,7 @@ fun TacticalBoard(
                                     }
                                 },
                                 onClick = {
-                                    viewModel.selectFormation(formation)
+                                    formationViewModel.selectFormation(formation)
                                     expanded = false
                                 }
                             )
@@ -202,7 +204,7 @@ fun TacticalBoard(
                                     positionY = offset.y.value
                                 )
                             }
-                            viewModel.createFormationWithPositions(formationName.trim(), teamName, positions)
+                            formationViewModel.createFormationWithPositions(formationName.trim(), teamName, positions)
                             formationName = ""
                         }
                     }) { Text("Guardar") }
@@ -377,7 +379,7 @@ fun TacticalBoard(
                             )
                         }
                         scope.launch {
-                            viewModel.updatePositions(formationId, positions)
+                            formationViewModel.updatePositions(formationId, positions)
                         }
                     },
                     modifier = Modifier

@@ -4,9 +4,10 @@ import com.example.playcoach.data.daos.FormationDao
 import com.example.playcoach.data.daos.PlayerPositionDao
 import com.example.playcoach.data.entities.FormationEntity
 import com.example.playcoach.data.entities.PlayerPositionEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class FormationRepository(
+class FormationRepository @Inject constructor(
     private val formationDao: FormationDao,
     private val playerPositionDao: PlayerPositionDao
 ) {

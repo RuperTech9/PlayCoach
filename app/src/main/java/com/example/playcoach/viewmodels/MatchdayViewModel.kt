@@ -1,20 +1,22 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playcoach.data.TeamsData
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.MatchdayEntity
+import com.example.playcoach.data.repositories.MatchdayRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MatchdayViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = AppDatabase.getRepository(application).matchdayRepository
+@HiltViewModel
+class MatchdayViewModel @Inject constructor(
+    private val repository: MatchdayRepository
+) : ViewModel() {
 
     private val _selectedTeam = MutableStateFlow("Infantil A")
 

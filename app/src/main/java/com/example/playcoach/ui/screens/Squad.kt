@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.data.entities.CoachEntity
 import com.example.playcoach.data.entities.PlayerEntity
@@ -43,9 +44,10 @@ fun Squad(
     onNavigateToOthers: () -> Unit,
     onNavigateToPlayerDetails: (PlayerEntity) -> Unit,
     teamName: String?,
-    playerViewModel: PlayerViewModel,
-    coachViewModel: CoachViewModel
 ) {
+    val coachViewModel: CoachViewModel = hiltViewModel()
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
             playerViewModel.loadPlayersByTeam(teamName)

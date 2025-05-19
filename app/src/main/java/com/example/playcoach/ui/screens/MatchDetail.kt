@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.entities.MatchdayEntity
 import com.example.playcoach.viewmodels.MatchdayViewModel
 
@@ -21,10 +22,10 @@ import com.example.playcoach.viewmodels.MatchdayViewModel
 @Composable
 fun MatchDetail(
     onNavigateBack: () -> Unit,
-
     matchdayId: Int,
-    matchdayViewModel: MatchdayViewModel
 ) {
+    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
+
     val matchdayFlow = remember(matchdayId) {
         matchdayViewModel.getMatchdayById(matchdayId)
     }

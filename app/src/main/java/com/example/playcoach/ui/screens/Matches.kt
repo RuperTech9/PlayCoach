@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.entities.MatchdayEntity
 import com.example.playcoach.data.entities.PlayerEntity
 import com.example.playcoach.ui.components.BaseScreen
@@ -44,14 +45,14 @@ fun Matches(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
-    teamName: String?,
-
-    matchdayViewModel: MatchdayViewModel,
-    playerStatViewModel: PlayerStatViewModel,
-    playerViewModel: PlayerViewModel,
-    callupViewModel: CallUpViewModel,
-    teamViewModel: TeamStatsViewModel
+    teamName: String?
 ) {
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
+    val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
+    val teamStatsViewModel: TeamStatsViewModel = hiltViewModel()
+    val callupViewModel: CallUpViewModel = hiltViewModel()
+
     val matchdays by matchdayViewModel.matchdays.collectAsState()
     val players by playerViewModel.players.collectAsState()
     val playerDialog = callupViewModel.playerDialog.collectAsState().value
@@ -63,7 +64,7 @@ fun Matches(
         teamName?.let {
             matchdayViewModel.updateSelectedTeam(it)
             playerViewModel.loadPlayersByTeam(it)
-            teamViewModel.updateSelectedTeam(it)
+            teamStatsViewModel.updateSelectedTeam(it)
         }
     }
 
@@ -565,8 +566,8 @@ fun Matches(
                                         scope.launch {
                                             matchdayViewModel.updateMatchday(editedMatchday)
                                             teamName?.let {
-                                                teamViewModel.updateSelectedTeam(it)
-                                                teamViewModel.forceRefresh()
+                                                teamStatsViewModel.updateSelectedTeam(it)
+                                                teamStatsViewModel.forceRefresh()
                                             }
 
                                             selectedMatchday = null

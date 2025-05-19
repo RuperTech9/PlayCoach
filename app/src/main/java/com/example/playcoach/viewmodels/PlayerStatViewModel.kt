@@ -1,22 +1,25 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.PlayerStatEntity
+import com.example.playcoach.data.repositories.MatchdayRepository
+import com.example.playcoach.data.repositories.PlayerRepository
+import com.example.playcoach.data.repositories.PlayerStatRepository
 import com.example.playcoach.ui.screens.MatchdayDetail
 import com.example.playcoach.ui.screens.PlayerStats
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class PlayerStatViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repos = AppDatabase.getRepository(application)
-    private val playerRepo = repos.playerRepository
-    private val statsRepo = repos.playerStatsRepository
-    private val matchdayRepo = repos.matchdayRepository
+@HiltViewModel
+class PlayerStatViewModel @Inject constructor(
+    private val playerRepo: PlayerRepository,
+    private val statsRepo: PlayerStatRepository,
+    private val matchdayRepo: MatchdayRepository
+) : ViewModel() {
 
     private val _playersStats = MutableStateFlow<List<PlayerStats>>(emptyList())
     val playersStats: StateFlow<List<PlayerStats>> = _playersStats.asStateFlow()

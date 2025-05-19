@@ -1,18 +1,20 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.TeamEntity
+import com.example.playcoach.data.repositories.TeamRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TeamViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = AppDatabase.getRepository(application).teamRepository
+@HiltViewModel
+class TeamViewModel @Inject constructor(
+    private val repository: TeamRepository
+) : ViewModel() {
 
     private val _teams = MutableStateFlow<List<TeamEntity>>(emptyList())
     val teams: StateFlow<List<TeamEntity>> = _teams.asStateFlow()

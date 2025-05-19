@@ -1,16 +1,19 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.PlayerEntity
+import com.example.playcoach.data.repositories.CallUpRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class CallUpViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class CallUpViewModel @Inject constructor(
+    private val repository: CallUpRepository
+) : ViewModel() {
 
-    private val repository = AppDatabase.getRepository(application).callUpRepository
     private val _calledUpPlayers = MutableStateFlow<List<Int>>(emptyList())
     private val calledUpPlayers: StateFlow<List<Int>> = _calledUpPlayers
 

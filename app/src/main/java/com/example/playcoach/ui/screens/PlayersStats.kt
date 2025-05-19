@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.R
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.ui.components.BaseScreen
@@ -57,9 +58,10 @@ fun PlayersStats(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     onNavigateToPlayerDetail: (PlayerStats) -> Unit,
-    teamName: String?,
-    playerStatViewModel: PlayerStatViewModel
+    teamName: String?
 ) {
+    val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
+
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrEmpty()) {
             playerStatViewModel.loadStatsForTeam(teamName)

@@ -1,9 +1,10 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
+import com.example.playcoach.data.repositories.MatchdayRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
@@ -26,10 +27,10 @@ data class MatchdayDetailTeam(
     val awayTeam: String
 )
 
-class TeamStatsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repos = AppDatabase.getRepository(application)
-    private val matchdayRepository = repos.matchdayRepository
+@HiltViewModel
+class TeamStatsViewModel @Inject constructor(
+    private val matchdayRepository: MatchdayRepository
+) : ViewModel() {
 
     private val _selectedTeam = MutableStateFlow<String?>(null)
 

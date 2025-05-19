@@ -1,9 +1,12 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
+import com.example.playcoach.data.repositories.MatchdayRepository
+import com.example.playcoach.data.repositories.PlayerRepository
+import com.example.playcoach.data.repositories.PlayerStatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -38,9 +41,12 @@ data class MatchdayPlayerDetail(
     val result: String
 )
 
-class PlayerDetailViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repos = AppDatabase.getRepository(application)
+@HiltViewModel
+class PlayerDetailViewModel @Inject constructor(
+    private val playerRepository: PlayerRepository,
+    private val playerStatsRepository: PlayerStatRepository,
+    private val matchdayRepository: MatchdayRepository
+) : ViewModel() {
 
     private val _playerDetail = MutableStateFlow<PlayerDetailState?>(null)
     val playerDetail: StateFlow<PlayerDetailState?> = _playerDetail.asStateFlow()
@@ -48,9 +54,9 @@ class PlayerDetailViewModel(application: Application) : AndroidViewModel(applica
     fun loadPlayerAndStats(playerId: Int) {
         viewModelScope.launch {
             combine(
-                repos.playerRepository.getPlayerByJerseyNumber(playerId),
-                repos.playerStatsRepository.getStatsByPlayer(playerId),
-                repos.matchdayRepository.getAllMatchdays()
+                playerRepository.getPlayerByJerseyNumber(playerId),
+                playerStatsRepository.getStatsByPlayer(playerId),
+                matchdayRepository.getAllMatchdays()
             ) { maybePlayer, statList, matchdayList ->
                 if (maybePlayer == null) {
                     null

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.viewmodels.TeamStatsData
 import com.example.playcoach.viewmodels.TeamStatsViewModel
@@ -31,16 +32,17 @@ fun TeamStats(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     onNavigateToMatchDetail: (Int) -> Unit,
-    teamName: String?,
-    teamViewModel: TeamStatsViewModel
+    teamName: String?
 ) {
+    val teamStatsViewModel: TeamStatsViewModel = hiltViewModel()
+
     LaunchedEffect(teamName) {
         teamName?.let {
-            teamViewModel.updateSelectedTeam(it)
+            teamStatsViewModel.updateSelectedTeam(it)
         }
     }
 
-    val data = teamViewModel.teamStats.collectAsState().value
+    val data = teamStatsViewModel.teamStats.collectAsState().value
 
     BaseScreen(
         title = "Estadísticas Equipo",

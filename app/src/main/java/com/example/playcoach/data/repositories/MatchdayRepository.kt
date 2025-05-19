@@ -2,10 +2,12 @@ package com.example.playcoach.data.repositories
 
 import com.example.playcoach.data.daos.MatchdayDao
 import com.example.playcoach.data.entities.MatchdayEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class MatchdayRepository(private val matchdayDao: MatchdayDao) {
-
+class MatchdayRepository @Inject constructor(
+    private val matchdayDao: MatchdayDao
+) {
     fun getAllMatchdays(): Flow<List<MatchdayEntity>> {
         return matchdayDao.getAllMatchdays()
     }

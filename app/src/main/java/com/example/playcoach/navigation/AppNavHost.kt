@@ -30,34 +30,23 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("team_selection") {
-            val teamViewModel: TeamViewModel = viewModel()
-            val matchdayViewModel: MatchdayViewModel = viewModel()
-            val eventViewModel: EventViewModel = viewModel()
             SelectTeam(
                 onTeamSelected = { team ->
                     selectedTeam.value = team
                     navController.navigate("calendar")
                 },
                 onAddTeam = { navController.navigate("add_team") },
-                onNavigateBack = { navController.popBackStack() },
-                teamViewModel = teamViewModel,
-                matchdayViewModel = matchdayViewModel,
-                eventViewModel = eventViewModel
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable("add_team") {
-            val teamViewModel: TeamViewModel = viewModel()
             AddTeam(
                 onNavigateBack = { navController.popBackStack() },
-                teamViewModel = teamViewModel
             )
         }
 
         composable("calendar") {
-            val eventViewModel: EventViewModel = viewModel()
-            val matchdayViewModel: MatchdayViewModel = viewModel()
-
             Calendar(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
@@ -68,9 +57,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value,
-                eventViewModel = eventViewModel,
-                matchdayViewModel = matchdayViewModel
+                teamName = selectedTeam.value
             )
         }
 
@@ -90,9 +77,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("squad") {
-            val playerViewModel: PlayerViewModel = viewModel()
-            val coachViewModel: CoachViewModel = viewModel()
-
             Squad(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
@@ -106,9 +90,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToPlayerDetails = { player ->
                     navController.navigate("player_details/${player.number}")
                 },
-                teamName = selectedTeam.value,
-                playerViewModel = playerViewModel,
-                coachViewModel = coachViewModel
+                teamName = selectedTeam.value
             )
         }
 
@@ -132,18 +114,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("matches") {
-            val matchdayViewModel: MatchdayViewModel = viewModel()
-            val playerStatViewModel: PlayerStatViewModel = viewModel()
-            val playerViewModel: PlayerViewModel = viewModel()
-            val callupViewModel: CallUpViewModel = viewModel()
-            val teamViewModel: TeamStatsViewModel = viewModel()
-
             Matches (
-                matchdayViewModel = matchdayViewModel,
-                playerStatViewModel = playerStatViewModel,
-                playerViewModel = playerViewModel,
-                callupViewModel = callupViewModel,
-                teamViewModel = teamViewModel,
                 teamName = selectedTeam.value,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
@@ -158,7 +129,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("team_stats") {
-            val teamViewModel: TeamStatsViewModel = viewModel()
             TeamStats(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
@@ -172,24 +142,20 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToMatchDetail = { matchdayId ->
                     navController.navigate("match_details/$matchdayId")
                 },
-                teamName = selectedTeam.value,
-                teamViewModel = teamViewModel
+                teamName = selectedTeam.value
             )
         }
 
         composable("match_details/{matchdayId}") { backStackEntry ->
             val matchdayId = backStackEntry.arguments?.getString("matchdayId")?.toIntOrNull() ?: -1
-            val matchdayViewModel: MatchdayViewModel = viewModel()
 
             MatchDetail(
                 matchdayId = matchdayId,
-                matchdayViewModel = matchdayViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable("player_stats") {
-            val playerStatViewModel: PlayerStatViewModel = viewModel()
             PlayersStats(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
@@ -203,20 +169,15 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToPlayerDetail = { player ->
                     navController.navigate("player_details/${player.number}")
                 },
-                teamName = selectedTeam.value,
-                playerStatViewModel = playerStatViewModel
+                teamName = selectedTeam.value
             )
         }
 
         composable("player_details/{playerId}") { backStackEntry ->
             val playerId = backStackEntry.arguments?.getString("playerId")?.toIntOrNull() ?: -1
-            val viewModel: PlayerDetailViewModel = viewModel()
-            val absenceViewModel: AbsenceViewModel = viewModel()
 
             PlayerDetail(
                 playerId = playerId,
-                viewModel = viewModel,
-                absenceViewModel = absenceViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -237,11 +198,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable("tactical_board") {
-            val formationViewModel: FormationViewModel = viewModel()
-
             TacticalBoard(
                 teamName = selectedTeam.value,
-                viewModel = formationViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },

@@ -3,9 +3,10 @@ package com.example.playcoach.data.repositories
 import com.example.playcoach.data.daos.AbsenceDao
 import com.example.playcoach.data.daos.EventDao
 import com.example.playcoach.data.entities.EventEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class EventRepository(
+class EventRepository @Inject constructor(
     private val eventDao: EventDao,
     private val absenceDao: AbsenceDao
 ) {

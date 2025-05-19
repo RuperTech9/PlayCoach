@@ -2,9 +2,12 @@ package com.example.playcoach.data.repositories
 
 import com.example.playcoach.data.daos.PlayerStatDao
 import com.example.playcoach.data.entities.PlayerStatEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class PlayerStatRepository(private val playerStatDao: PlayerStatDao) {
+class PlayerStatRepository @Inject constructor(
+    private val playerStatDao: PlayerStatDao
+) {
 
     fun getStatsByPlayer(playerId: Int): Flow<List<PlayerStatEntity>> {
         return playerStatDao.getStatsByPlayer(playerId)

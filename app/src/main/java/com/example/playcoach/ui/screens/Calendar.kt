@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.playcoach.data.entities.EventEntity
 import com.example.playcoach.data.entities.MatchdayEntity
@@ -59,10 +60,12 @@ fun Calendar(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     teamName: String?,
-
-    eventViewModel: EventViewModel,
-    matchdayViewModel: MatchdayViewModel
 ) {
+    val eventViewModel: EventViewModel = hiltViewModel()
+    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+    val callUpViewModel: CallUpViewModel = hiltViewModel()
+
     LaunchedEffect(teamName) {
         teamName?.let { team ->
             matchdayViewModel.updateSelectedTeam(team)
@@ -84,19 +87,13 @@ fun Calendar(
     var currentMonth by remember { mutableIntStateOf(LocalDate.now().monthValue) }
     var currentYear by remember { mutableIntStateOf(LocalDate.now().year) }
     val today = LocalDate.now()
-
     var showAddEventDialog by remember { mutableStateOf(false) }
     var showDateSelector by remember { mutableStateOf(false) }
     var showAttendanceDialog by remember { mutableStateOf(false) }
-
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var selectedEvent by remember { mutableStateOf<EventEntity?>(null) }
     var selectedMatchday by remember { mutableStateOf<MatchdayEntity?>(null) }
-
     var showCallUpDialog by remember { mutableStateOf(false) }
-    val playerViewModel: PlayerViewModel = viewModel()
-    val callUpViewModel: CallUpViewModel = viewModel()
-
     val sortedMatchdays = remember(matchdays) {
         matchdays.sortedBy {
             runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
@@ -232,9 +229,11 @@ fun Calendar(
                         }
 
                         val matchday = sortedMatchdays[visibleMatchdayIndex]
-                        val calledUp by remember(matchday.id) {
-                            callUpViewModel.getCalledUpPlayers(matchday.id)
-                        }.collectAsState(initial = emptyList())
+                        val calledUp by produceState(initialValue = emptyList<Int>(), matchday.id) {
+                            callUpViewModel.getCalledUpPlayers(matchday.id).collect {
+                                value = it
+                            }
+                        }
 
                         val players by playerViewModel.players.collectAsState()
                         val totalPlayers = players.size

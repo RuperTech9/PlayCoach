@@ -7,14 +7,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.viewmodels.TeamViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTeam(
     onNavigateBack: () -> Unit,
-    teamViewModel: TeamViewModel
 ) {
+    val teamViewModel: TeamViewModel = hiltViewModel()
+
     val newTeamName by teamViewModel.newTeamName.collectAsState()
 
     Scaffold(

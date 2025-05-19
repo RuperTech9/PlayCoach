@@ -2,9 +2,12 @@ package com.example.playcoach.data.repositories
 
 import com.example.playcoach.data.daos.CallUpDao
 import com.example.playcoach.data.entities.CallUpEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
-class CallUpRepository(private val dao: CallUpDao) {
+class CallUpRepository @Inject constructor(
+    private val dao: CallUpDao
+) {
 
     fun getCalledUpPlayers(matchdayId: Int): Flow<List<Int>> =
         dao.getCalledUpPlayersForMatchday(matchdayId)

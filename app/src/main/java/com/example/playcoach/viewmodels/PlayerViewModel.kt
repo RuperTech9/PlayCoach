@@ -1,18 +1,20 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.PlayerEntity
+import com.example.playcoach.data.repositories.PlayerRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PlayerViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = AppDatabase.getRepository(application).playerRepository
+@HiltViewModel
+class PlayerViewModel @Inject constructor(
+    private val repository: PlayerRepository
+) : ViewModel() {
 
     // Form fields
     private val _number = MutableStateFlow(0)
@@ -51,10 +53,6 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    /**
-     * Adds a player if the jersey number is not already taken in the team.
-     * @return true if added successfully, false if the number is already in use.
-     */
     suspend fun addPlayerIfPossible(
         team: String,
         firstName: String,

@@ -15,10 +15,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.R
 import com.example.playcoach.data.entities.TeamEntity
 import com.example.playcoach.viewmodels.EventViewModel
 import com.example.playcoach.viewmodels.MatchdayViewModel
+import com.example.playcoach.viewmodels.PlayerStatViewModel
+import com.example.playcoach.viewmodels.PlayerViewModel
 import com.example.playcoach.viewmodels.TeamViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,11 +30,11 @@ fun SelectTeam(
     onTeamSelected: (String) -> Unit,
     onAddTeam: () -> Unit,
     onNavigateBack: () -> Unit,
-
-    teamViewModel: TeamViewModel,
-    matchdayViewModel: MatchdayViewModel,
-    eventViewModel: EventViewModel
 ) {
+    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
+    val teamViewModel: TeamViewModel = hiltViewModel()
+    val eventViewModel: EventViewModel = hiltViewModel()
+
     val teams by teamViewModel.teams.collectAsState()
 
     Scaffold(
