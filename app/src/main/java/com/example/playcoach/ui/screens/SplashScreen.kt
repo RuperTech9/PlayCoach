@@ -70,10 +70,10 @@ fun SplashScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo_sln),
+                painter = painterResource(id = R.drawable.logo_app),
                 contentDescription = "Club Logo",
                 modifier = Modifier
-                    .size(240.dp)
+                    .size(350.dp)
                     .scale(scale)
                     .clip(CircleShape)
                     .clickable {
@@ -83,15 +83,7 @@ fun SplashScreen(
             )
 
             Text(
-                text = "PlayCoach",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFFFDC801),
-                letterSpacing = 1.2.sp
-            )
-
-            Text(
-                text = "Toca el escudo para empezar",
+                text = "Toca el logo para empezar",
                 fontSize = 16.sp,
                 color = Color(0xFFD1E8FF)
             )

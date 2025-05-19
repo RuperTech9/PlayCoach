@@ -119,6 +119,13 @@ fun Calendar(
             visibleMatchdayIndex = index
         }
     }
+    // Ensure players are loaded when the visible matchday changes
+    LaunchedEffect(sortedMatchdays, visibleMatchdayIndex) {
+        val matchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
+        matchday?.team?.let {
+            playerViewModel.loadPlayersByTeam(it)
+        }
+    }
 
     BaseScreen(
         title = "Calendario",
@@ -199,13 +206,7 @@ fun Calendar(
                 }
             }
 
-            // Ensure players are loaded when the visible matchday changes
-            LaunchedEffect(sortedMatchdays, visibleMatchdayIndex) {
-                val matchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
-                matchday?.team?.let {
-                    playerViewModel.loadPlayersByTeam(it)
-                }
-            }
+
 
             if (sortedMatchdays.isNotEmpty()) {
                 Column(
@@ -229,20 +230,20 @@ fun Calendar(
                         }
 
                         val matchday = sortedMatchdays[visibleMatchdayIndex]
-                        val calledUp by produceState(initialValue = emptyList<Int>(), matchday.id) {
-                            callUpViewModel.getCalledUpPlayers(matchday.id).collect {
-                                value = it
-                            }
+                        LaunchedEffect(matchday.id) {
+                            callUpViewModel.loadCallUpForMatchday(matchday.id)
                         }
+                        val calledUp by callUpViewModel.calledUpPlayers.collectAsState()
+
 
                         val players by playerViewModel.players.collectAsState()
                         val totalPlayers = players.size
                         val hasCallUp = calledUp.isNotEmpty()
 
                         val callUpText = when {
-                            hasCallUp && totalPlayers > 0 -> "✅ Convocatoria hecha (${calledUp.size}/$totalPlayers)"
-                            !hasCallUp && totalPlayers > 0 -> "❌ Sin convocatoria"
-                            else -> "⏳ Cargando..."
+                            totalPlayers == 0 -> "⏳ Cargando jugadores..."
+                            hasCallUp -> "✅ Convocatoria hecha (${calledUp.size}/$totalPlayers)"
+                            else -> "❌ Sin convocatoria"
                         }
 
                         Card(
@@ -264,44 +265,62 @@ fun Calendar(
                                     .fillMaxWidth()
                                     .padding(vertical = 10.dp, horizontal = 12.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                // Matchday number
-                                Text(
-                                    text = "Jornada ${matchday.matchdayNumber}",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = if (isNext) Color(0xFF00205B) else Color(0xFF6C7A89)
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Jornada ${matchday.matchdayNumber}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        color = Color(0xFF00205B)
+                                    )
 
-                                // Date and time
+                                    if (isNext) {
+                                        Surface(
+                                            color = Color(0xFF4CAF50),
+                                            shape = RoundedCornerShape(8.dp),
+                                            tonalElevation = 2.dp,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        ) {
+                                            Text(
+                                                text = "Próxima jornada",
+                                                color = Color.White,
+                                                fontSize = 12.sp,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                            )
+                                        }
+                                    }
+                                }
+
                                 Text(
                                     text = "📅 ${matchday.date} — ${matchday.time}",
                                     fontSize = 14.sp,
-                                    color = Color.DarkGray
+                                    color = Color.Gray
                                 )
 
-                                // Teams
-                                Text(
-                                    text = matchday.homeTeam,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 15.sp,
-                                    color = Color(0xFF00205B)
-                                )
-                                Text(
-                                    text = "vs",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 15.sp,
-                                    color = Color(0xFF00205B)
-                                )
-                                Text(
-                                    text = matchday.awayTeam,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 15.sp,
-                                    color = Color(0xFF00205B)
-                                )
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = matchday.homeTeam,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        color = Color(0xFF00205B)
+                                    )
+                                    Text(
+                                        text = "vs",
+                                        fontSize = 14.sp,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = matchday.awayTeam,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        color = Color(0xFF00205B)
+                                    )
+                                }
 
-                                // Score if played
                                 if (isPlayed && (matchday.homeGoals >= 0 || matchday.awayGoals >= 0)) {
                                     Text(
                                         text = "${matchday.homeGoals} - ${matchday.awayGoals}",
@@ -311,7 +330,6 @@ fun Calendar(
                                     )
                                 }
 
-                                // Call-up status
                                 Text(
                                     text = callUpText,
                                     fontSize = 14.sp,
@@ -319,6 +337,7 @@ fun Calendar(
                                     color = if (hasCallUp) Color(0xFF4CAF50) else Color(0xFFF44336)
                                 )
                             }
+
                         }
 
                         IconButton(
@@ -470,8 +489,8 @@ fun Calendar(
         TrainingAttendanceDialog(
             date = selectedDate!!.format(dateFormatter),
             team = teamName ?: "",
-            playerViewModel = viewModel(),
-            absenceViewModel = viewModel(),
+            playerViewModel = hiltViewModel(),
+            absenceViewModel = hiltViewModel(),
             onDismiss = { showAttendanceDialog = false }
         )
     }
@@ -723,6 +742,12 @@ fun MatchdayDetailsDialog(
     onOpenCallUp: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val playersViewModel: PlayerViewModel = hiltViewModel()
+    val callUpViewModel: CallUpViewModel = hiltViewModel()
+    val players = playersViewModel.players.collectAsState().value
+    val calledUp = callUpViewModel.calledUpPlayers.collectAsState().value
+
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -740,64 +765,59 @@ fun MatchdayDetailsDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("🗓 Jornada: ")
+                listOf(
+                    "🗓 Jornada: " to "${matchday.matchdayNumber}",
+                    "📆 Fecha: " to matchday.date,
+                    "📝 Hora: " to matchday.time,
+                    "🏠 Local: " to matchday.homeTeam,
+                    "🚩 Visitante: " to matchday.awayTeam
+                ).forEach { (label, value) ->
+                    Text(buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
+                            append(label)
                         }
-                        append("${matchday.matchdayNumber}")
-                    },
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("📆 Fecha: ")
-                        }
-                        append(matchday.date)
-                    },
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("📝 Hora: ")
-                        }
-                        append(matchday.time)
-                    },
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("🏠 Local: ")
-                        }
-                        append(matchday.homeTeam)
-                    },
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("🚩 Visitante: ")
-                        }
-                        append(matchday.awayTeam)
-                    },
-                    fontSize = 16.sp
-                )
+                        append(value)
+                    }, fontSize = 16.sp)
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = onOpenCallUp,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
-                ) {
-                    Text("Gestionar Convocatoria", color = Color.White)
+                if (!matchday.played) {
+                    Button(
+                        onClick = onOpenCallUp,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
+                    ) {
+                        Text("Gestionar Convocatoria", color = Color.White)
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = {
+                            val calledUpPlayers = players.filter { player ->
+                                calledUp.contains(player.number)
+                            }
+
+                            val pdf = generateCallUpPdf(context, matchday, calledUpPlayers)
+                            val uri = FileProvider.getUriForFile(
+                                context,
+                                "${context.packageName}.provider",
+                                pdf
+                            )
+
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                putExtra(Intent.EXTRA_TEXT, "📄 Convocados Jornada ${matchday.matchdayNumber}")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+
+                            context.startActivity(Intent.createChooser(intent, "Compartir PDF"))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, Color(0xFF00205B))
+                    ) {
+                        Text("📥 Descargar PDF", color = Color(0xFF00205B))
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -821,9 +841,12 @@ fun MatchdayCallUpDialog(
     onDismiss: () -> Unit
 ) {
     val callUpState = remember { mutableStateMapOf<Int, Boolean>() }
-    val previousCallUps by callUpViewModel
-        .getCalledUpPlayers(matchday.id)
-        .collectAsState(initial = emptyList())
+
+    LaunchedEffect(matchday.id) {
+        callUpViewModel.loadCallUpForMatchday(matchday.id)
+    }
+
+    val previousCallUps by callUpViewModel.calledUpPlayers.collectAsState()
 
     LaunchedEffect(matchday.id, players, previousCallUps) {
         if (players.isNotEmpty()) {

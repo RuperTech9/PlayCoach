@@ -68,9 +68,13 @@ fun Matches(
         }
     }
 
-    val calledPlayers = selectedMatchday?.id?.let {
-        callupViewModel.getCalledUpPlayers(it).collectAsState(initial = emptyList()).value
-    } ?: emptyList()
+    LaunchedEffect(selectedMatchday?.id) {
+        selectedMatchday?.id?.let {
+            callupViewModel.loadCallUpForMatchday(it)
+        }
+    }
+    val calledPlayers by callupViewModel.calledUpPlayers.collectAsState()
+
 
     val filteredPlayers = players
         .filter { it.number in calledPlayers }

@@ -15,19 +15,18 @@ class CallUpViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _calledUpPlayers = MutableStateFlow<List<Int>>(emptyList())
-    private val calledUpPlayers: StateFlow<List<Int>> = _calledUpPlayers
+    val calledUpPlayers: StateFlow<List<Int>> = _calledUpPlayers
 
     data class PlayerDialog(val player: PlayerEntity, val matchdayId: Int)
     private val _playerDialog = MutableStateFlow<PlayerDialog?>(null)
     val playerDialog: StateFlow<PlayerDialog?> = _playerDialog
 
-    fun getCalledUpPlayers(matchdayId: Int): StateFlow<List<Int>> {
+    fun loadCallUpForMatchday(matchdayId: Int) {
         viewModelScope.launch {
             repository.getCalledUpPlayers(matchdayId).collect { list ->
                 _calledUpPlayers.value = list
             }
         }
-        return calledUpPlayers
     }
 
     fun saveCallUps(matchdayId: Int, playerIds: List<Int>) {

@@ -13,42 +13,40 @@ import com.itextpdf.kernel.pdf.canvas.draw.SolidLine
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.borders.Border
 import com.itextpdf.layout.element.*
-import com.itextpdf.layout.properties.TextAlignment
-import com.itextpdf.layout.properties.UnitValue
+import com.itextpdf.layout.properties.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-fun generateCallUpPdf(
+fun generateHeadlinePdf(
     context: Context,
     matchday: MatchdayEntity,
-    calledUpPlayers: List<PlayerEntity>
+    starters: List<PlayerEntity>,
+    substitutes: List<PlayerEntity>
 ): File {
-    val pdfFile = File(context.cacheDir, "Convocados_Jornada_${matchday.matchdayNumber}.pdf")
+    val pdfFile = File(context.cacheDir, "Equipo_Jornada_${matchday.matchdayNumber}.pdf")
     val document = PdfDocument(PdfWriter(pdfFile))
     val pdfDoc = Document(document)
 
-    // 🖼️ Logo
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_sln)
     val stream = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
     val imageData = ImageDataFactory.create(stream.toByteArray())
     val logo = Image(imageData).setHeight(50f).setWidth(50f)
 
-    val title = Paragraph("CONVOCATORIA JORNADA ${matchday.matchdayNumber}")
+    val title = Paragraph("EQUIPO JORNADA ${matchday.matchdayNumber}")
         .setFontSize(20f)
         .setBold()
-        .setMarginLeft(10f)
         .setTextAlignment(TextAlignment.LEFT)
+        .setMarginLeft(10f)
 
-    val header = Table(UnitValue.createPercentArray(floatArrayOf(1f, 5f)))
+    val headerTable = Table(UnitValue.createPercentArray(floatArrayOf(1f, 5f)))
         .useAllAvailableWidth()
         .addCell(Cell().add(logo).setBorder(Border.NO_BORDER))
-        .addCell(Cell().add(title).setBorder(Border.NO_BORDER))
+        .addCell(Cell().add(title).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER))
 
-    pdfDoc.add(header)
+    pdfDoc.add(headerTable)
     pdfDoc.add(LineSeparator(SolidLine(1f)))
 
-    // 🗓 Match info
     val isHome = matchday.homeTeam.trim().equals(matchday.team, ignoreCase = true)
     val opponent = if (isHome) matchday.awayTeam else matchday.homeTeam
     val condition = if (isHome) "🏟️ Local" else "🛫 Visitante"
@@ -61,14 +59,32 @@ fun generateCallUpPdf(
     pdfDoc.add(LineSeparator(SolidLine(1f)))
     pdfDoc.add(Paragraph("\n"))
 
-    // ✅ Player list
     pdfDoc.add(
-        Paragraph("🟢 Jugadores Convocados (${calledUpPlayers.size})")
-            .setBold().setFontSize(15f).setUnderline()
+        Paragraph("✅ TITULARES (${starters.size})")
+            .setFontSize(16f)
+            .setBold()
+            .setUnderline()
     )
+    starters.forEach { player ->
+        pdfDoc.add(
+            Paragraph("• ${player.number} - ${player.firstName}")
+                .setFontSize(12f)
+        )
+    }
 
-    calledUpPlayers.sortedBy { it.number }.forEach {
-        pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName}").setFontSize(12f))
+    pdfDoc.add(Paragraph("\n"))
+
+    pdfDoc.add(
+        Paragraph("🪑 SUPLENTES (${substitutes.size})")
+            .setFontSize(16f)
+            .setBold()
+            .setUnderline()
+    )
+    substitutes.forEach { player ->
+        pdfDoc.add(
+            Paragraph("• ${player.number} - ${player.firstName}")
+                .setFontSize(12f)
+        )
     }
 
     pdfDoc.add(Paragraph("\n\n📤 Generado con PlayCoach"))
