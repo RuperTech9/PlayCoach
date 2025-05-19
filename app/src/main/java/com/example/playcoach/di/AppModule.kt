@@ -19,9 +19,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase =
-        Room.databaseBuilder(appContext, AppDatabase::class.java, "playcoach_database")
-            .fallbackToDestructiveMigration(false)
-            .build()
+        AppDatabase.getDatabase(appContext)
 
     // DAOs
     @Provides fun providePlayerDao(db: AppDatabase): PlayerDao = db.playerDao()

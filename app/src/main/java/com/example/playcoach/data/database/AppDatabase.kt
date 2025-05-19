@@ -2,13 +2,10 @@ package com.example.playcoach.data.database
 
 import android.content.Context
 import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.playcoach.data.TeamsData
 import com.example.playcoach.data.daos.*
 import com.example.playcoach.data.entities.*
 import com.example.playcoach.data.repositories.*
-import kotlinx.coroutines.runBlocking
-import java.util.concurrent.Executors
+import com.example.playcoach.di.DatabaseCallback
 
 @Database(
     entities = [
@@ -50,58 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "playcoach_database"
                 )
-                    .addCallback(object : Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // Preload data in a background thread
-                            Executors.newSingleThreadExecutor().execute {
-                                runBlocking {
-                                    val database = getDatabase(context.applicationContext)
-                                    val teamDao = database.teamDao()
-                                    val playerDao = database.playerDao()
-                                    val coachDao = database.coachDao()
-                                    val matchdayDao = database.matchdayDao()
-
-                                    TeamsData.teamList.forEach { teamInfo ->
-                                        // Insert team
-                                        teamDao.insertTeam(
-                                            TeamEntity(name = teamInfo.teamName)
-                                        )
-
-                                        // Insert players
-                                        teamInfo.players.forEach { player ->
-                                            playerDao.insertPlayer(
-                                                PlayerEntity(
-                                                    number = player.number,
-                                                    firstName = player.firstName,
-                                                    lastName = player.lastName,
-                                                    nickname = player.nickname,
-                                                    position = player.position,
-                                                    team = teamInfo.teamName
-                                                )
-                                            )
-                                        }
-
-                                        // Insert coaches
-                                        teamInfo.coaches.forEach { coach ->
-                                            coachDao.insertCoach(
-                                                CoachEntity(
-                                                    name = coach.name,
-                                                    team = teamInfo.teamName
-                                                )
-                                            )
-                                        }
-
-                                        // Insert matchdays if any
-                                        val predefinedMatchdays = TeamsData.getMatchesForTeam(teamInfo.teamName)
-                                        predefinedMatchdays.forEach { matchday ->
-                                            matchdayDao.insertMatchday(matchday)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
+                    .addCallback(DatabaseCallback(context)) // ✅ Aquí se añade el callback
                     .build()
                     .also { INSTANCE = it }
             }
