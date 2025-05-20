@@ -27,11 +27,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.entities.MatchdayEntity
-import com.example.playcoach.data.entities.PlayerEntity
 import com.example.playcoach.ui.components.BaseScreen
+import com.example.playcoach.ui.components.matches.SegmentedButtonRow
+import com.example.playcoach.ui.components.matches.PlayerStatsDialog
 import com.example.playcoach.utils.generateHeadlinePdf
 import com.example.playcoach.viewmodels.*
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 @Composable
@@ -615,158 +615,5 @@ fun Matches(
             onDismiss = { callupViewModel.closePlayerStatsDialog() },
             playerStatsViewModel = playerStatViewModel
         )
-    }
-}
-
-
-@Composable
-fun SegmentedButtonRow(
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
-    options: List<Pair<String, String>>
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { (value, label) ->
-            val selected = selectedOption == value
-            ElevatedButton(
-                onClick = { onOptionSelected(value) },
-                colors = if (selected) ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00205B),
-                    contentColor = Color.White
-                )
-                else ButtonDefaults.buttonColors(
-                    containerColor = Color.LightGray,
-                    contentColor = Color.Black
-                ),
-                elevation = ButtonDefaults.buttonElevation(4.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(label, fontSize = 14.sp)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun PlayerStatsDialog(
-    player: PlayerEntity,
-    matchdayId: Int,
-    onSave: (goals: Int, assists: Int, yellowCards: Int, redCards: Int, minutes: Int, wasStarter: Boolean) -> Unit,
-    onDismiss: () -> Unit,
-    playerStatsViewModel: PlayerStatViewModel
-) {
-    var goalsText by remember { mutableStateOf("") }
-    var assistsText by remember { mutableStateOf("") }
-    var yellowCardsText by remember { mutableStateOf("") }
-    var redCardsText by remember { mutableStateOf("") }
-    var minutesText by remember { mutableStateOf("") }
-    var wasStarter by remember { mutableStateOf(false) }
-
-    val currentPlayer = rememberUpdatedState(player)
-    val currentMatchdayId = rememberUpdatedState(matchdayId)
-
-    LaunchedEffect(currentPlayer.value, currentMatchdayId.value) {
-        playerStatsViewModel
-            .getPlayerStat(currentPlayer.value.number, currentMatchdayId.value)
-            .firstOrNull()
-            ?.let {
-                goalsText = it.goals.toString()
-                assistsText = it.assists.toString()
-                yellowCardsText = it.yellowCards.toString()
-                redCardsText = it.redCards.toString()
-                minutesText = it.minutesPlayed.toString()
-                wasStarter = it.wasStarter
-            }
-    }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = Color.White,
-            tonalElevation = 6.dp,
-            border = BorderStroke(1.dp, Color(0xFF00205B)),
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "📋 Estadística para ${player.number} - ${player.firstName}",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF00205B)
-                )
-
-                OutlinedTextField(
-                    value = goalsText,
-                    onValueChange = { goalsText = it },
-                    label = { Text("Goles") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = assistsText,
-                    onValueChange = { assistsText = it },
-                    label = { Text("Asistencias") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = yellowCardsText,
-                    onValueChange = { yellowCardsText = it },
-                    label = { Text("Tarjetas Amarillas") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = redCardsText,
-                    onValueChange = { redCardsText = it },
-                    label = { Text("Tarjetas Rojas") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = minutesText,
-                    onValueChange = { minutesText = it },
-                    label = { Text("Minutos Jugados") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("¿Titular?", modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = wasStarter,
-                        onCheckedChange = { wasStarter = it }
-                    )
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = {
-                            onSave(
-                                goalsText.toIntOrNull() ?: 0,
-                                assistsText.toIntOrNull() ?: 0,
-                                yellowCardsText.toIntOrNull() ?: 0,
-                                redCardsText.toIntOrNull() ?: 0,
-                                minutesText.toIntOrNull() ?: 0,
-                                wasStarter
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
-                    ) {
-                        Text("Guardar", color = Color.White)
-                    }
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Cancelar")
-                    }
-                }
-            }
-        }
     }
 }
