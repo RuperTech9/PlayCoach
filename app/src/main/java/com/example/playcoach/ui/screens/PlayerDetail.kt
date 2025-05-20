@@ -79,203 +79,8 @@ fun PlayerDetail(
                 Text("Cargando datos del jugador...")
             }
         } else {
-            PlayerDetailContent(
-                state = state,
-                absenceViewModel = absenceViewModel,
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlayerDetailContent(
-    state: PlayerDetailState,
-    absenceViewModel: AbsenceViewModel,
-    modifier: Modifier = Modifier
-) {
-    LaunchedEffect(state.id) {
-        absenceViewModel.loadAbsenceCount(state.id)
-    }
-
-    val absences by absenceViewModel.absenceCount.collectAsState()
-    var selectedFilter by remember { mutableStateOf(MatchdayFilter.ALL) }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFFE3F2FD), Color(0xFFCCE5FF))
-                )
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Player card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val imageRes = TeamsData.getPlayerImageForTeamAndNumber(state.team, state.number)
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "Picture of ${state.name}",
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "${state.number} - ${state.name}",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00205B)
-                        )
-                        Text(
-                            text = state.team,
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_sln),
-                        contentDescription = "Team crest",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                    )
-                }
-            }
-
-            // Stats card
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = "📊 Estadísticas Generales",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF00205B)
-                    )
-
-                    fun statText(label: String, value: Any): AnnotatedString = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                            append("$label: ")
-                        }
-                        append(value.toString())
-                    }
-
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(statText("Goles", state.totalGoals), fontSize = 14.sp)
-                        Text(statText("Asist", state.totalAssists), fontSize = 14.sp)
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(statText("Min", state.totalMinutes), fontSize = 14.sp)
-                        Text(statText("Amar", state.totalYellows), fontSize = 14.sp)
-                        Text(statText("Rojas", state.totalReds), fontSize = 14.sp)
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(statText("Part", state.matchesPlayed), fontSize = 14.sp)
-                        Text(statText("Tit", state.starts), fontSize = 14.sp)
-                        Text(statText("Supl", state.substitutes), fontSize = 14.sp)
-                    }
-                    Row {
-                        Text(
-                            text = "Faltas Asistencia: $absences",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.Red
-                        )
-                    }
-                }
-            }
-
-            Text(
-                text = "🗓 Jornadas Jugadas",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF00205B)
-            )
-
-            // Filter dropdown
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFF00205B)),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F4FF)),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "🎯 Filtrar jornadas por:",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF00205B)
-                    )
-
-                    var expanded by remember { mutableStateOf(false) }
-
-                    Box {
-                        OutlinedButton(
-                            onClick = { expanded = true },
-                            shape = RoundedCornerShape(10.dp),
-                            border = BorderStroke(1.dp, Color(0xFF00205B)),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF00205B))
-                        ) {
-                            Text(text = selectedFilter.label)
-                        }
-
-                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                            MatchdayFilter.entries.forEach { filter ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            filter.label,
-                                            fontWeight = if (filter == selectedFilter) FontWeight.Bold else FontWeight.Normal,
-                                            color = if (filter == selectedFilter) Color(0xFF00205B) else Color.Black
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedFilter = filter
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            val absences by absenceViewModel.absenceCount.collectAsState()
+            var selectedFilter by remember { mutableStateOf(MatchdayFilter.ALL) }
 
             val filteredMatchdays = when (selectedFilter) {
                 MatchdayFilter.ALL -> state.matchdays
@@ -286,11 +91,198 @@ private fun PlayerDetailContent(
             }
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color(0xFFE3F2FD), Color(0xFFCCE5FF))
+                        )
+                    ),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item {
+                    PlayerCard(state)
+                }
+                item {
+                    StatSummaryCard(state, absences)
+                }
+                item {
+                    Text(
+                        text = "🗓 Jornadas Jugadas",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF00205B)
+                    )
+                }
+                item {
+                    MatchdayFilterCard(selectedFilter) {
+                        selectedFilter = it
+                    }
+                }
                 items(filteredMatchdays) { matchday ->
                     MatchdayDetailCard(matchday)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlayerCard(state: PlayerDetailState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val imageRes = TeamsData.getPlayerImageForTeamAndNumber(state.team, state.number)
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Picture of ${state.name}",
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "${state.number} - ${state.name}",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF00205B)
+                )
+                Text(
+                    text = state.team,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.logo_sln),
+                contentDescription = "Team crest",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+        }
+    }
+}
+
+@Composable
+fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "📊 Estadísticas Generales",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF00205B)
+            )
+
+            fun statText(label: String, value: Any): AnnotatedString = buildAnnotatedString {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
+                    append("$label: ")
+                }
+                append(value.toString())
+            }
+
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(statText("Goles", state.totalGoals), fontSize = 14.sp)
+                Text(statText("Asist", state.totalAssists), fontSize = 14.sp)
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(statText("Min", state.totalMinutes), fontSize = 14.sp)
+                Text(statText("Amar", state.totalYellows), fontSize = 14.sp)
+                Text(statText("Rojas", state.totalReds), fontSize = 14.sp)
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(statText("Part", state.matchesPlayed), fontSize = 14.sp)
+                Text(statText("Tit", state.starts), fontSize = 14.sp)
+                Text(statText("Supl", state.substitutes), fontSize = 14.sp)
+            }
+            Row {
+                Text(
+                    text = "Faltas Asistencia: $absences",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Red
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MatchdayFilterCard(selectedFilter: MatchdayFilter, onFilterChange: (MatchdayFilter) -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, Color(0xFF00205B)),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F4FF)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "🎯 Filtrar jornadas por:",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF00205B)
+            )
+
+            var expanded by remember { mutableStateOf(false) }
+
+            Box {
+                OutlinedButton(
+                    onClick = { expanded = true },
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.dp, Color(0xFF00205B)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF00205B))
+                ) {
+                    Text(text = selectedFilter.label)
+                }
+
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    MatchdayFilter.entries.forEach { filter ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    filter.label,
+                                    fontWeight = if (filter == selectedFilter) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (filter == selectedFilter) Color(0xFF00205B) else Color.Black
+                                )
+                            },
+                            onClick = {
+                                onFilterChange(filter)
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -348,3 +340,4 @@ private fun StyledStatRow(label: String, value: Any) {
         )
     }
 }
+

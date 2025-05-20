@@ -3,7 +3,6 @@ package com.example.playcoach.ui.screens
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -80,64 +79,70 @@ fun Squad(
         onNavigateToFormations = onNavigateToFormations,
         onNavigateToOthers = onNavigateToOthers
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            SquadSection(
-                title = "Entrenadores",
-                titleColor = Color(0xFF00205B),
-                titleSize = 20.sp,
-                fabColor = Color(0xFF1A73E8),
-                fabOnClick = { showCoachDialog = true },
-                content = {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        items(coaches) { coach ->
-                            CoachCardItem(
-                                text = coach.name,
-                                deleteText = "Eliminar Entrenador",
-                                onDeleteClick = { coachToDelete = coach }
-                            )
+            item {
+                SquadSection(
+                    title = "Entrenadores",
+                    titleColor = Color(0xFF00205B),
+                    titleSize = 20.sp,
+                    fabColor = Color(0xFF1A73E8),
+                    fabOnClick = { showCoachDialog = true },
+                    content = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            coaches.forEach { coach ->
+                                CoachCardItem(
+                                    text = coach.name,
+                                    deleteText = "Eliminar Entrenador",
+                                    onDeleteClick = { coachToDelete = coach }
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
 
-            SquadSection(
-                title = "Jugadores",
-                titleColor = Color(0xFF00205B),
-                titleSize = 20.sp,
-                fabColor = Color(0xFF4CAF50),
-                fabOnClick = { showPlayerDialog = true },
-                content = {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        items(players.sortedBy { it.number }) { player ->
-                            PlayerCardItem(
-                                team = teamName.orEmpty(),
-                                player = player,
-                                onDeleteClick = { playerToDelete = player },
-                                onInfoClick = { onNavigateToPlayerDetails(player) }
-                            )
+            item {
+                SquadSection(
+                    title = "Jugadores",
+                    titleColor = Color(0xFF00205B),
+                    titleSize = 20.sp,
+                    fabColor = Color(0xFF4CAF50),
+                    fabOnClick = { showPlayerDialog = true },
+                    content = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            players.sortedBy { it.number }.forEach { player ->
+                                PlayerCardItem(
+                                    team = teamName.orEmpty(),
+                                    player = player,
+                                    onDeleteClick = { playerToDelete = player },
+                                    onInfoClick = { onNavigateToPlayerDetails(player) }
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
 
             if (!errorMessage.isNullOrEmpty()) {
-                Text(
-                    text = errorMessage!!,
-                    color = Color.Red,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                item {
+                    Text(
+                        text = errorMessage!!,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
         }
 
