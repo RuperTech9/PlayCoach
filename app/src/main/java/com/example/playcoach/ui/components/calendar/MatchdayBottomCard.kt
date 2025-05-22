@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -166,18 +163,13 @@ fun MatchdayBottomCard(
                         )
                     }
 
-                    if (!isPlayed) {
-                        if (isLoading) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                        } else {
-                            Text(
-                                text = callUpText,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = if (hasCallUp) Color(0xFF4CAF50) else Color(0xFFF44336)
-                            )
-                        }
+                    if (!isPlayed && !isLoading) {
+                        Text(
+                            text = callUpText,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (hasCallUp) Color(0xFF4CAF50) else Color(0xFFF44336)
+                        )
                     }
                 }
             }

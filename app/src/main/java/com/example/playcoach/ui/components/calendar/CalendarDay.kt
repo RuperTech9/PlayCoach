@@ -30,11 +30,23 @@ fun CalendarDay(
     val event = groupedEvents[date]?.firstOrNull()
     val matchday = groupedMatchdays[date]?.firstOrNull()
     val backgroundColor = when {
-        date == today -> Color(0xFFB3E5FC)
-        event != null -> Color(0xFFFFF59D)
-        matchday != null -> Color(0xFF7CC77F)
+        matchday != null && matchday.played && matchday.homeGoals >= 0 && matchday.awayGoals >= 0 -> {
+            val isHome = matchday.homeTeam == matchday.team
+            val goalsFor = if (isHome) matchday.homeGoals else matchday.awayGoals
+            val goalsAgainst = if (isHome) matchday.awayGoals else matchday.homeGoals
+
+            when {
+                goalsFor > goalsAgainst -> Color(0xFF388E3C)   // Verde - victoria
+                goalsFor == goalsAgainst -> Color(0xFFFFC107)  // Amarillo - empate
+                else -> Color(0xFFD32F2F)                      // Rojo - derrota
+            }
+        }
+        matchday != null -> Color.LightGray                   // Partido aún sin jugar
+        event != null -> Color(0xFFFFF59D)                    // Evento normal
+        date == today -> Color(0xFFB3E5FC)                    // Día actual
         else -> Color.White
     }
+
 
     Box(
         modifier = Modifier
