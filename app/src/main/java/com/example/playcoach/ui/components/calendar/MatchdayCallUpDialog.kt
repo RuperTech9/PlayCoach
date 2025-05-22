@@ -165,7 +165,7 @@ fun MatchdayCallUpDialog(
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, Color(0xFF00205B))
                 ) {
-                    Text("📥 Descargar PDF", color = Color(0xFF00205B))
+                    Text("📥 Descargar Convocados PDF", color = Color(0xFF00205B))
                 }
             }
         }

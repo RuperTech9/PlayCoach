@@ -58,6 +58,14 @@ fun CalendarScreenContent(
         }
     }
 
+    val visibleMatchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
+
+    LaunchedEffect(visibleMatchday?.team) {
+        visibleMatchday?.team?.let {
+            playerViewModel.loadPlayersByTeam(it)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

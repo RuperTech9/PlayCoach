@@ -50,7 +50,7 @@ fun MatchdayDetailsDialog(
             color = Color.White,
             tonalElevation = 4.dp,
             border = BorderStroke(1.dp, Color(0xFF00205B)),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
@@ -76,8 +76,6 @@ fun MatchdayDetailsDialog(
                     }, fontSize = 16.sp)
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
-
                 if (!matchday.played) {
                     Button(
                         onClick = onOpenCallUp,
@@ -87,6 +85,30 @@ fun MatchdayDetailsDialog(
                         Text("Gestionar Convocatoria", color = Color.White)
                     }
                 } else {
+                    val resultText = "${matchday.homeGoals} - ${matchday.awayGoals}"
+                    val resultColor = when {
+                        (matchday.team == matchday.homeTeam && matchday.homeGoals > matchday.awayGoals) ||
+                                (matchday.team == matchday.awayTeam && matchday.awayGoals > matchday.homeGoals) -> Color(0xFF388E3C) // Verde
+
+                        matchday.homeGoals == matchday.awayGoals -> Color(0xFFFFC107) // Amarillo
+
+                        else -> Color(0xFFD32F2F) // Rojo
+                    }
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
+                                append("🔢 Resultado: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = resultColor)) {
+                                append(resultText)
+                            }
+                        },
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     OutlinedButton(
                         onClick = {
                             val calledUpPlayers = players.filter { player ->
@@ -110,9 +132,9 @@ fun MatchdayDetailsDialog(
                             context.startActivity(Intent.createChooser(intent, "Compartir PDF"))
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        border = BorderStroke(1.dp, Color(0xFF00205B))
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
                     ) {
-                        Text("📥 Descargar PDF", color = Color(0xFF00205B))
+                        Text("📥 Descargar Convocatoria PDF", color = Color.White)
                     }
                 }
 

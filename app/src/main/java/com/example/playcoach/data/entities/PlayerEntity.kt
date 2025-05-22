@@ -10,6 +10,6 @@ data class PlayerEntity(
     val firstName: String,
     val lastName: String,
     val nickname: String,
-    val position: String, // "Goalkeeper" or "Player"
+    val position: String, // "Portero" o "Jugador"
     val team: String
 )

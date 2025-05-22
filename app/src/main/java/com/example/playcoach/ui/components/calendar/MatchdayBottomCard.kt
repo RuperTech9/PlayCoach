@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,25 +40,27 @@ fun MatchdayBottomCard(
 ) {
     val matchday = matchdays.getOrNull(visibleMatchdayIndex) ?: return
 
+    // Cargar convocatoria cuando cambia el partido
     LaunchedEffect(matchday.id) {
         callUpViewModel.loadCallUpForMatchday(matchday.id)
     }
 
-    val calledUp by callUpViewModel.calledUpPlayers.collectAsState()
-    val players by playerViewModel.players.collectAsState()
-    val totalPlayers = players.size
-    val hasCallUp = calledUp.isNotEmpty()
+    val callUpState by callUpViewModel
+        .getCallUpUiState(playerViewModel.players)
+        .collectAsState()
+
+    val isPlayed = matchday.played
+    val isLoading = callUpState.players.isEmpty() || callUpState.isLoading
+    val hasCallUp = callUpState.calledUp.isNotEmpty()
+    val totalPlayers = callUpState.players.size
 
     val callUpText = when {
-        totalPlayers == 0 -> "⏳ Cargando jugadores..."
-        hasCallUp -> "✅ Convocatoria hecha (${calledUp.size}/$totalPlayers)"
+        isLoading -> " "
+        hasCallUp -> "✅ Convocatoria hecha (${callUpState.calledUp.size}/$totalPlayers)"
         else -> "❌ Sin convocatoria"
     }
 
-    Column(
-        modifier = modifier
-            .padding(bottom = 5.dp)
-    ) {
+    Column(modifier = modifier.padding(bottom = 5.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -65,7 +70,7 @@ fun MatchdayBottomCard(
                 enabled = visibleMatchdayIndex > 0,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Anterior")
             }
 
             Card(
@@ -80,7 +85,6 @@ fun MatchdayBottomCard(
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 val isNext = visibleMatchdayIndex == initialVisibleIndex
-                val isPlayed = matchday.played
 
                 Column(
                     modifier = Modifier
@@ -89,6 +93,7 @@ fun MatchdayBottomCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    // Cabecera de jornada
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -117,12 +122,14 @@ fun MatchdayBottomCard(
                         }
                     }
 
+                    // Fecha y hora
                     Text(
                         text = "📅 ${matchday.date} — ${matchday.time}",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
 
+                    // Equipos
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = matchday.homeTeam,
@@ -139,21 +146,39 @@ fun MatchdayBottomCard(
                         )
                     }
 
-                    if (isPlayed && (matchday.homeGoals >= 0 || matchday.awayGoals >= 0)) {
+                    // Resultado si ya se jugó
+                    if (isPlayed && (matchday.homeGoals >= 0 && matchday.awayGoals >= 0)) {
+                        val isHome = matchday.homeTeam == matchday.team
+                        val goalsFor = if (isHome) matchday.homeGoals else matchday.awayGoals
+                        val goalsAgainst = if (isHome) matchday.awayGoals else matchday.homeGoals
+
+                        val resultColor = when {
+                            goalsFor > goalsAgainst -> Color(0xFF388E3C) // Verde
+                            goalsFor == goalsAgainst -> Color(0xFFFFC107) // Amarillo
+                            else -> Color(0xFFD32F2F) // Rojo
+                        }
+
                         Text(
                             text = "${matchday.homeGoals} - ${matchday.awayGoals}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF388E3C)
+                            color = resultColor
                         )
                     }
 
-                    Text(
-                        text = callUpText,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (hasCallUp) Color(0xFF4CAF50) else Color(0xFFF44336)
-                    )
+                    if (!isPlayed) {
+                        if (isLoading) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        } else {
+                            Text(
+                                text = callUpText,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (hasCallUp) Color(0xFF4CAF50) else Color(0xFFF44336)
+                            )
+                        }
+                    }
                 }
             }
 

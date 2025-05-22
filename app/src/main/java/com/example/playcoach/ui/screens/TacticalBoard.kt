@@ -1,5 +1,3 @@
-// Versión completa de TacticalBoard.kt traducida y corregida
-
 package com.example.playcoach.ui.screens
 
 import androidx.compose.foundation.*
@@ -283,7 +281,10 @@ fun TacticalBoard(
                                         contentScale = ContentScale.Fit
                                     )
 
-                                    val playerText = player.nickname.ifBlank { player.firstName }
+                                    val playerText = when {
+                                        player.nickname.isNotBlank() -> player.nickname
+                                        else -> player.firstName
+                                    }
 
                                     Text(
                                         playerText,

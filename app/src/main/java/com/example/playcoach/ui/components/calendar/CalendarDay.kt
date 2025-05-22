@@ -31,8 +31,8 @@ fun CalendarDay(
     val matchday = groupedMatchdays[date]?.firstOrNull()
     val backgroundColor = when {
         date == today -> Color(0xFFB3E5FC)
-        event != null -> Color(0xFF7CC77F)
-        matchday != null -> Color(0xFFFFF59D)
+        event != null -> Color(0xFFFFF59D)
+        matchday != null -> Color(0xFF7CC77F)
         else -> Color.White
     }
 

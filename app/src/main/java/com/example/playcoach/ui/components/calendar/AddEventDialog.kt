@@ -77,12 +77,12 @@ fun AddEventDialog(
 
                 // Event type selector
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(
+                    Button(
                         onClick = { expanded = true },
                         modifier = Modifier.fillMaxWidth(),
-                        border = BorderStroke(1.dp, Color(0xFF00205B))
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
                     ) {
-                        Text(eventType)
+                        Text(eventType, color = Color.White)
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DropdownMenuItem(

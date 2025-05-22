@@ -10,7 +10,7 @@ object TeamsData {
         val firstName: String,
         val lastName: String,
         val nickname: String = "",
-        val position: String = "Jugador" // "Goalkeeper" or "Player"
+        val position: String = "Jugador" // "Portero" o "Jugador"
     )
 
     data class CoachInfo(
@@ -36,20 +36,29 @@ object TeamsData {
         TeamInfo(
             teamName = "Infantil A",
             players = listOf(
+                // PORTERO
                 PlayerInfo(13, "Jordan", "Illoh Marimon", "Jordan", "Portero"),
+
+                // DEFENSAS
                 PlayerInfo(4, "Martín", "Peña Alonso", "Peña", "Jugador"),
                 PlayerInfo(5, "Iván", "López López", "Iván", "Jugador"),
                 PlayerInfo(17, "Rubén", "Vargas García", "Rubén", "Jugador"),
                 PlayerInfo(33, "Aitor", "Díez García", "Aitor", "Jugador"),
                 PlayerInfo(12, "David", "Camino Moreno", "David", "Jugador"),
+
+                // MEDIOS
                 PlayerInfo(41, "Valentín", "López González", "Valen", "Jugador"),
                 PlayerInfo(10, "Hugo", "Cañeque Lizana", "Cañeque", "Jugador"),
                 PlayerInfo(8,  "Martín", "Godino Perejón", "Martín", "Jugador"),
                 PlayerInfo(6,  "Ibrahim", "Hamdan", "Ibra", "Jugador"),
+
+                // BANDAS
                 PlayerInfo(14, "Rocío", "Sánchez Martín", "Rocío", "Jugador"),
                 PlayerInfo(34, "Diego", "Fernández de Mera Barroso", "Diego", "Jugador"),
                 PlayerInfo(19, "Iván", "Castro Merchán", "Castro", "Jugador"),
                 PlayerInfo(7,  "Adrián", "Méndez Bañón", "Méndez", "Jugador"),
+
+                // DELANTEROS
                 PlayerInfo(11, "Hugo", "Jímenez Moreno", "Jiménez", "Jugador"),
                 PlayerInfo(29, "Marcos Rafael", "Ortega Aquino", "Marcos", "Jugador"),
                 PlayerInfo(9,  "Rodrigo", "Pontes Feito", "Rodri", "Jugador"),

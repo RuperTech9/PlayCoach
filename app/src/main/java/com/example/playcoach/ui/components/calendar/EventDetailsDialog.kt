@@ -72,12 +72,12 @@ fun EventDetailsDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                OutlinedButton(
+                Button(
                     onClick = onDelete,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text("Eliminar Evento")
+                    Text("Eliminar Evento", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

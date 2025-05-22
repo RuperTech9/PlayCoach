@@ -477,7 +477,7 @@ fun Matches(
                                 OutlinedTextField(
                                     value = description,
                                     onValueChange = { description = it },
-                                    label = { Text("🕒 Hora / Descripción") },
+                                    label = { Text("🕒 Hora") },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(12.dp)
                                 )

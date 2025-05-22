@@ -47,6 +47,12 @@ fun PlayerDetail(
 
     val state = playerDetailViewModel.playerDetail.collectAsState().value
 
+    LaunchedEffect(state?.id) {
+        state?.id?.let {
+            absenceViewModel.loadAbsenceCount(it)
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
