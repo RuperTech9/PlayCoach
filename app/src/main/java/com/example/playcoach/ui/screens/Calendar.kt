@@ -45,9 +45,11 @@ fun Calendar(
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
     val today = LocalDate.now()
 
-    val sortedMatchdays = remember(matchdays) {
-        matchdays.sortedBy {
-            runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
+    val sortedMatchdays by remember(matchdays) {
+        derivedStateOf {
+            matchdays.sortedBy {
+                runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
+            }
         }
     }
 

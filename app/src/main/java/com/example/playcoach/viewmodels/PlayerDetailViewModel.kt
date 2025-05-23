@@ -58,55 +58,50 @@ class PlayerDetailViewModel @Inject constructor(
                 playerStatsRepository.getStatsByPlayer(playerId),
                 matchdayRepository.getAllMatchdays()
             ) { maybePlayer, statList, matchdayList ->
-                if (maybePlayer == null) {
-                    null
-                } else {
-                    val totalGoals = statList.sumOf { it.goals }
-                    val totalAssists = statList.sumOf { it.assists }
-                    val totalYellows = statList.sumOf { it.yellowCards }
-                    val totalReds = statList.sumOf { it.redCards }
-                    val totalMinutes = statList.sumOf { it.minutesPlayed }
-                    val matchesPlayed = statList.map { it.matchdayId }.distinct().count()
-                    val starts = statList.count { it.wasStarter }
-                    val substitutes = statList.count { !it.wasStarter }
+                maybePlayer?.let { player ->
+
+                    val matchdayMap = matchdayList.associateBy { it.id }
+
                     val matchdayDetails = statList.mapNotNull { stat ->
-                        val md = matchdayList.find { it.id == stat.matchdayId }
-                        md?.let {
+                        matchdayMap[stat.matchdayId]?.let { md ->
                             MatchdayPlayerDetail(
-                                matchdayNumber = it.matchdayNumber,
-                                description = it.time,
-                                homeTeam = it.homeTeam,
-                                awayTeam = it.awayTeam,
+                                matchdayNumber = md.matchdayNumber,
+                                description = md.time,
+                                homeTeam = md.homeTeam,
+                                awayTeam = md.awayTeam,
                                 goals = stat.goals,
                                 assists = stat.assists,
                                 yellowCards = stat.yellowCards,
                                 redCards = stat.redCards,
                                 minutesPlayed = stat.minutesPlayed,
                                 wasStarter = stat.wasStarter,
-                                result = "(${it.homeGoals}-${it.awayGoals})"
+                                result = "(${md.homeGoals}-${md.awayGoals})"
                             )
                         }
                     }
 
                     PlayerDetailState(
-                        id = maybePlayer.id,
-                        number = maybePlayer.number,
-                        name = maybePlayer.firstName,
-                        team = maybePlayer.team,
-                        totalGoals = totalGoals,
-                        totalAssists = totalAssists,
-                        totalYellows = totalYellows,
-                        totalReds = totalReds,
-                        totalMinutes = totalMinutes,
-                        matchesPlayed = matchesPlayed,
-                        starts = starts,
-                        substitutes = substitutes,
+                        id = player.id,
+                        number = player.number,
+                        name = player.firstName,
+                        team = player.team,
+                        totalGoals = statList.sumOf { it.goals },
+                        totalAssists = statList.sumOf { it.assists },
+                        totalYellows = statList.sumOf { it.yellowCards },
+                        totalReds = statList.sumOf { it.redCards },
+                        totalMinutes = statList.sumOf { it.minutesPlayed },
+                        matchesPlayed = statList.map { it.matchdayId }.distinct().count(),
+                        starts = statList.count { it.wasStarter },
+                        substitutes = statList.count { !it.wasStarter },
                         matchdays = matchdayDetails
                     )
                 }
-            }.collectLatest {
-                _playerDetail.value = it
             }
+                .distinctUntilChanged()
+                .collectLatest {
+                    _playerDetail.value = it
+                }
         }
     }
 }
+

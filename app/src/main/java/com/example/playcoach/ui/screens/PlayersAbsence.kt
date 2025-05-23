@@ -49,8 +49,10 @@ fun PlayersAbsence(
     val attendanceByDate by absenceViewModel.attendanceByDate.collectAsState()
 
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
-    val groupedEvents = remember(eventList) {
-        eventList.groupBy { LocalDate.parse(it.date, dateFormatter) }
+    val groupedEvents by remember(eventList) {
+        derivedStateOf {
+            eventList.groupBy { LocalDate.parse(it.date, dateFormatter) }
+        }
     }
 
     var selectedEvent by remember { mutableStateOf<LocalDate?>(null) }
@@ -100,7 +102,12 @@ fun PlayersAbsence(
                 color = Color(0xFF00205B)
             )
 
-            val sortedDates = groupedEvents.keys.sorted()
+            val sortedDates by remember(groupedEvents) {
+                derivedStateOf {
+                    groupedEvents.keys.sorted()
+                }
+            }
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()

@@ -117,11 +117,15 @@ fun Squad(
                     fabColor = Color(0xFF4CAF50),
                     fabOnClick = { showPlayerDialog = true },
                     content = {
+                        val sortedPlayers by remember(players) {
+                            derivedStateOf { players.sortedBy { it.number } }
+                        }
+
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            players.sortedBy { it.number }.forEach { player ->
+                            sortedPlayers.forEach { player ->
                                 PlayerCardItem(
                                     team = teamName.orEmpty(),
                                     player = player,
@@ -387,7 +391,9 @@ fun PlayerCardItem(
     onDeleteClick: () -> Unit,
     onInfoClick: () -> Unit
 ) {
-    val imageRes = TeamsData.getPlayerImageForTeamAndNumber(team, player.number)
+    val imageRes = remember(team, player.number) {
+        TeamsData.getPlayerImageForTeamAndNumber(team, player.number)
+    }
 
     Card(
         modifier = Modifier

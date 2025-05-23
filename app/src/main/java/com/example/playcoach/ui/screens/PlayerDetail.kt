@@ -88,12 +88,16 @@ fun PlayerDetail(
             val absences by absenceViewModel.absenceCount.collectAsState()
             var selectedFilter by remember { mutableStateOf(MatchdayFilter.ALL) }
 
-            val filteredMatchdays = when (selectedFilter) {
-                MatchdayFilter.ALL -> state.matchdays
-                MatchdayFilter.STARTER -> state.matchdays.filter { it.wasStarter }
-                MatchdayFilter.SUBSTITUTE -> state.matchdays.filter { !it.wasStarter }
-                MatchdayFilter.MINUTES_OVER_30 -> state.matchdays.filter { it.minutesPlayed >= 30 }
-                MatchdayFilter.MINUTES_UNDER_30 -> state.matchdays.filter { it.minutesPlayed < 30 }
+            val filteredMatchdays by remember(selectedFilter, state.matchdays) {
+                derivedStateOf {
+                    when (selectedFilter) {
+                        MatchdayFilter.ALL -> state.matchdays
+                        MatchdayFilter.STARTER -> state.matchdays.filter { it.wasStarter }
+                        MatchdayFilter.SUBSTITUTE -> state.matchdays.filter { !it.wasStarter }
+                        MatchdayFilter.MINUTES_OVER_30 -> state.matchdays.filter { it.minutesPlayed >= 30 }
+                        MatchdayFilter.MINUTES_UNDER_30 -> state.matchdays.filter { it.minutesPlayed < 30 }
+                    }
+                }
             }
 
             LazyColumn(
@@ -137,6 +141,10 @@ fun PlayerDetail(
 
 @Composable
 fun PlayerCard(state: PlayerDetailState) {
+    val imageRes = remember(state.team, state.number) {
+        TeamsData.getPlayerImageForTeamAndNumber(state.team, state.number)
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -149,7 +157,6 @@ fun PlayerCard(state: PlayerDetailState) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val imageRes = TeamsData.getPlayerImageForTeamAndNumber(state.team, state.number)
             Image(
                 painter = painterResource(id = imageRes),
                 contentDescription = "Picture of ${state.name}",

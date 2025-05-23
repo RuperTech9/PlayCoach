@@ -76,9 +76,10 @@ fun Matches(
     val calledPlayers by callupViewModel.calledUpPlayers.collectAsState()
 
 
-    val filteredPlayers = players
-        .filter { it.number in calledPlayers }
-        .sortedBy { it.number }
+    val filteredPlayers = remember(players, calledPlayers) {
+        players.filter { it.number in calledPlayers }
+            .sortedBy { it.number }
+    }
 
     BaseScreen(
         title = "Partidos",
@@ -228,10 +229,12 @@ fun Matches(
                             }
 
                             filteredPlayers.forEach { player ->
-                                val imageRes = com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
-                                    teamName.orEmpty(),
-                                    player.number
-                                )
+                                val imageRes = remember(teamName, player.number) {
+                                    com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
+                                        teamName.orEmpty(),
+                                        player.number
+                                    )
+                                }
 
                                 val isStarter = stats.any {
                                     it.playerId == player.number && it.matchdayId == matchday.id && it.wasStarter
@@ -276,16 +279,18 @@ fun Matches(
                     }
 
                     if (showTeamDialog) {
-                        val starters = filteredPlayers.filter { player ->
-                            stats.any {
-                                it.playerId == player.number && it.matchdayId == matchday.id && it.wasStarter
-                            }
-                        }.sortedBy { it.number }
+                        val starters = remember(filteredPlayers, stats, matchday.id) {
+                            filteredPlayers.filter { player ->
+                                stats.any { it.playerId == player.number && it.matchdayId == matchday.id && it.wasStarter }
+                            }.sortedBy { it.number }
+                        }
 
-                        val starterIds = starters.map { it.number }
-                        val substitutes = filteredPlayers
-                            .filterNot { it.number in starterIds }
-                            .sortedBy { it.number }
+                        val starterIds = remember(starters) { starters.map { it.number } }
+
+                        val substitutes = remember(filteredPlayers, starterIds) {
+                            filteredPlayers.filterNot { it.number in starterIds }
+                                .sortedBy { it.number }
+                        }
 
                         Dialog(onDismissRequest = { showTeamDialog = false }) {
                             Surface(
@@ -320,10 +325,12 @@ fun Matches(
                                             )
                                         }
                                         items(starters) { player ->
-                                            val imageRes = com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
-                                                player.team,
-                                                player.number
-                                            )
+                                            val imageRes = remember(player.team, player.number) {
+                                                com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
+                                                    player.team,
+                                                    player.number
+                                                )
+                                            }
 
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,
@@ -357,10 +364,12 @@ fun Matches(
                                             )
                                         }
                                         items(substitutes) { player ->
-                                            val imageRes = com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
-                                                player.team,
-                                                player.number
-                                            )
+                                            val imageRes = remember(player.team, player.number) {
+                                                com.example.playcoach.data.TeamsData.getPlayerImageForTeamAndNumber(
+                                                    player.team,
+                                                    player.number
+                                                )
+                                            }
 
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,

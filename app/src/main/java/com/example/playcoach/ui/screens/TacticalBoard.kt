@@ -301,8 +301,17 @@ fun TacticalBoard(
             }
 
             item {
-                val starters = players.map { it.first }
-                val substitutes = teamPlayers.filter { it.number !in starters }
+                val starters by remember(players) {
+                    derivedStateOf {
+                        players.map { it.first }
+                    }
+                }
+
+                val substitutes by remember(teamPlayers, starters) {
+                    derivedStateOf {
+                        teamPlayers.filter { it.number !in starters }
+                    }
+                }
 
                 Text("Suplentes:", modifier = Modifier.padding(start = 12.dp, top = 4.dp))
                 Row(

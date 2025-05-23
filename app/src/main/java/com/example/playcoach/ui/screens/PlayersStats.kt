@@ -69,7 +69,9 @@ fun PlayersStats(
     }
 
     val originalList = playerStatViewModel.playersStats.collectAsState().value
-    val sortedList = originalList.sortedBy { it.number }
+    val sortedList by remember(originalList) {
+        derivedStateOf { originalList.sortedBy { it.number } }
+    }
 
     BaseScreen(
         title = "Estadísticas",
@@ -113,6 +115,9 @@ fun PlayerStatsCard(
     player: PlayerStats,
     onClick: () -> Unit
 ) {
+    val imageRes = remember(team, player.number) {
+        TeamsData.getPlayerImageForTeamAndNumber(team, player.number)
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,7 +134,6 @@ fun PlayerStatsCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val imageRes = TeamsData.getPlayerImageForTeamAndNumber(team, player.number)
 
             Image(
                 painter = painterResource(id = imageRes),
