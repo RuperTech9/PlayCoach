@@ -46,10 +46,11 @@ fun TacticalBoard(
     val savedPositions = formationViewModel.positions.collectAsState().value
     val formations = formationViewModel.formations.collectAsState().value
 
-    var players by remember { mutableStateOf<List<Pair<Int, DpOffset>>>(emptyList()) }
-    var formationName by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedPlayer by remember { mutableStateOf<Int?>(null) }
+    var players by remember { mutableStateOf(formationViewModel.players) }
+    var selectedPlayer by remember { mutableStateOf(formationViewModel.selectedPlayer) }
+    var formationName by remember { mutableStateOf(formationViewModel.formationName) }
+    var expanded by remember { mutableStateOf(formationViewModel.expanded) }
+
     var showDialog by remember { mutableStateOf(false) }
     var formationToDelete by remember { mutableStateOf<FormationEntity?>(null) }
 
@@ -92,6 +93,7 @@ fun TacticalBoard(
                 }
             }
         }
+        formationViewModel.players = players
     }
 
     BaseScreen(
@@ -186,7 +188,10 @@ fun TacticalBoard(
                 ) {
                     OutlinedTextField(
                         value = formationName,
-                        onValueChange = { formationName = it },
+                        onValueChange = {
+                            formationName = it
+                            formationViewModel.formationName = it
+                        },
                         label = { Text("Crear nueva formación") },
                         modifier = Modifier.weight(1f)
                     )
@@ -203,6 +208,7 @@ fun TacticalBoard(
                             }
                             formationViewModel.createFormationWithPositions(formationName.trim(), teamName, positions)
                             formationName = ""
+                            formationViewModel.formationName = ""
                         }
                     }) { Text("Guardar") }
                 }
@@ -250,11 +256,13 @@ fun TacticalBoard(
                                                         id to DpOffset(newX, newY)
                                                     } else it
                                                 }
+                                                formationViewModel.players = players
                                             }
                                         }
                                         .clickable {
                                             if (selectedPlayer == null) {
                                                 selectedPlayer = id
+                                                formationViewModel.selectedPlayer = id
                                             } else {
                                                 val sub = teamPlayers.find { it.number == selectedPlayer }
                                                 if (sub != null && sub.number !in players.map { it.first }) {
@@ -262,8 +270,11 @@ fun TacticalBoard(
                                                         if (it.first == id) selectedPlayer!! to it.second else it
                                                     }
                                                     selectedPlayer = null
+                                                    formationViewModel.selectedPlayer = null
+                                                    formationViewModel.players = players
                                                 } else {
                                                     selectedPlayer = id
+                                                    formationViewModel.selectedPlayer = id
                                                 }
                                             }
                                         }

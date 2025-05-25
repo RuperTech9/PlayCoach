@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.R
 import com.example.playcoach.data.entities.TeamEntity
-import com.example.playcoach.viewmodels.EventViewModel
-import com.example.playcoach.viewmodels.MatchdayViewModel
-import com.example.playcoach.viewmodels.TeamViewModel
+import com.example.playcoach.viewmodels.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,9 +27,10 @@ fun SelectTeam(
     onAddTeam: () -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
     val teamViewModel: TeamViewModel = hiltViewModel()
+    val matchdayViewModel: MatchdayViewModel = hiltViewModel()
     val eventViewModel: EventViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel() // ✅ persistencia de equipo seleccionado
 
     val teams by teamViewModel.teams.collectAsState()
 
@@ -89,7 +88,7 @@ fun SelectTeam(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color(0xFFCCE5FF)) // light sky blue
+                .background(Color(0xFFCCE5FF))
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),
@@ -105,6 +104,8 @@ fun SelectTeam(
                         border = BorderStroke(1.dp, Color(0xFF00205B)),
                         elevation = CardDefaults.cardElevation(3.dp),
                         onClick = {
+                            // ✅ Guardar el equipo seleccionado de forma global
+                            mainViewModel.selectedTeam = team.name
                             matchdayViewModel.updateSelectedTeam(team.name)
                             eventViewModel.updateSelectedTeam(team.name)
                             onTeamSelected(team.name)

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.playcoach.data.entities.MatchdayEntity
 import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.ui.components.matches.SegmentedButtonRow
 import com.example.playcoach.ui.components.matches.PlayerStatsDialog
@@ -52,33 +51,44 @@ fun Matches(
     val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
     val teamStatsViewModel: TeamStatsViewModel = hiltViewModel()
     val callupViewModel: CallUpViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
 
     val matchdays by matchdayViewModel.matchdays.collectAsState()
     val players by playerViewModel.players.collectAsState()
+    val calledPlayers by callupViewModel.calledUpPlayers.collectAsState()
     val playerDialog = callupViewModel.playerDialog.collectAsState().value
-    var selectedMatchday by remember { mutableStateOf<MatchdayEntity?>(null) }
-    var selectedMode by remember { mutableStateOf("estadísticas") }
+
     val scope = rememberCoroutineScope()
+    var lastLoadedTeam by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(teamName) {
         teamName?.let {
+            if (it != lastLoadedTeam) {
+                lastLoadedTeam = it
+                playerViewModel.loadPlayersByTeam(it)
+            }
             matchdayViewModel.updateSelectedTeam(it)
-            playerViewModel.loadPlayersByTeam(it)
             teamStatsViewModel.updateSelectedTeam(it)
         }
     }
+
+    val filteredPlayers by remember(players, calledPlayers) {
+        derivedStateOf {
+            players.filter { it.number in calledPlayers }
+                .sortedBy { it.number }
+        }
+    }
+
+    val selectedMatchdayId by mainViewModel.selectedMatchdayIdFlow.collectAsState()
+    val selectedMatchday = matchdays.find { it.id == selectedMatchdayId }
+
+
+    val selectedMode = remember { mutableStateOf(mainViewModel.selectedMode) }
 
     LaunchedEffect(selectedMatchday?.id) {
         selectedMatchday?.id?.let {
             callupViewModel.loadCallUpForMatchday(it)
         }
-    }
-    val calledPlayers by callupViewModel.calledUpPlayers.collectAsState()
-
-
-    val filteredPlayers = remember(players, calledPlayers) {
-        players.filter { it.number in calledPlayers }
-            .sortedBy { it.number }
     }
 
     BaseScreen(
@@ -124,7 +134,9 @@ fun Matches(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { selectedMatchday = matchday },
+                                .clickable {
+                                    mainViewModel.selectedMatchdayId = matchday.id
+                                },
                             colors = CardDefaults.cardColors(containerColor = Color.White),
                             border = BorderStroke(1.dp, Color(0xFF90CAF9)),
                             elevation = CardDefaults.cardElevation(4.dp)
@@ -173,7 +185,6 @@ fun Matches(
 
             // If a matchday is selected, show options
             selectedMatchday?.let { matchday ->
-
                 Text(
                     "⚙️ Opciones Jornada ${matchday.matchdayNumber}",
                     fontSize = 18.sp,
@@ -186,8 +197,11 @@ fun Matches(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     SegmentedButtonRow(
-                        selectedOption = selectedMode,
-                        onOptionSelected = { selectedMode = it },
+                        selectedOption = selectedMode.value,
+                        onOptionSelected = {
+                            selectedMode.value = it
+                            mainViewModel.selectedMode = it
+                        },
                         options = listOf(
                             "estadísticas" to "📊 Estadísticas Jugador",
                             "editar" to "✏️ Editar Jornada"
@@ -195,7 +209,7 @@ fun Matches(
                     )
                 }
 
-                if (selectedMode == "estadísticas") {
+                if (selectedMode.value == "estadísticas") {
                     val stats by playerStatViewModel.allStats.collectAsState()
                     val startersCount = stats.count { it.matchdayId == matchday.id && it.wasStarter }
 
@@ -437,7 +451,7 @@ fun Matches(
                             }
                         }
                     }
-                }     else if (selectedMode == "editar") {
+                }     else if (selectedMode.value == "editar") {
                     var description by remember { mutableStateOf(matchday.time) }
                     var homeGoals by remember { mutableStateOf(matchday.homeGoals.toString()) }
                     var awayGoals by remember { mutableStateOf(matchday.awayGoals.toString()) }
@@ -583,7 +597,7 @@ fun Matches(
                                                 teamStatsViewModel.forceRefresh()
                                             }
 
-                                            selectedMatchday = null
+                                            mainViewModel.selectedMatchdayId = null
                                             snackbarHostState.showSnackbar("✅ Jornada guardada correctamente")
                                         }
                                     },

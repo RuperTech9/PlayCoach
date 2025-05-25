@@ -1,5 +1,6 @@
 package com.example.playcoach.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.playcoach.data.entities.EventEntity
 import com.example.playcoach.data.entities.MatchdayEntity
@@ -7,16 +8,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @HiltViewModel
-class CalendarViewModel @Inject constructor() : ViewModel() {
+class CalendarViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
-    private val _currentMonth = MutableStateFlow(LocalDate.now().monthValue)
+    // Persisten tras rotación
+    private val _currentMonth = savedStateHandle.getStateFlow("currentMonth", LocalDate.now().monthValue)
     val currentMonth: StateFlow<Int> = _currentMonth
 
-    private val _currentYear = MutableStateFlow(LocalDate.now().year)
+    private val _currentYear = savedStateHandle.getStateFlow("currentYear", LocalDate.now().year)
     val currentYear: StateFlow<Int> = _currentYear
 
+    private val _visibleMatchdayIndex = savedStateHandle.getStateFlow("visibleMatchdayIndex", 0)
+    val visibleMatchdayIndex: StateFlow<Int> = _visibleMatchdayIndex
+
+    // Temporales (no es crítico persistirlos)
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
     val selectedDate: StateFlow<LocalDate?> = _selectedDate
 
@@ -38,25 +47,26 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
     private val _showCallUpDialog = MutableStateFlow(false)
     val showCallUpDialog: StateFlow<Boolean> = _showCallUpDialog
 
-    private val _visibleMatchdayIndex = MutableStateFlow(0)
-    val visibleMatchdayIndex: StateFlow<Int> = _visibleMatchdayIndex
-
     fun nextMonth() {
         if (_currentMonth.value == 12) {
-            _currentMonth.value = 1
-            _currentYear.value++
+            savedStateHandle["currentMonth"] = 1
+            savedStateHandle["currentYear"] = _currentYear.value + 1
         } else {
-            _currentMonth.value++
+            savedStateHandle["currentMonth"] = _currentMonth.value + 1
         }
     }
 
     fun previousMonth() {
         if (_currentMonth.value == 1) {
-            _currentMonth.value = 12
-            _currentYear.value--
+            savedStateHandle["currentMonth"] = 12
+            savedStateHandle["currentYear"] = _currentYear.value - 1
         } else {
-            _currentMonth.value--
+            savedStateHandle["currentMonth"] = _currentMonth.value - 1
         }
+    }
+
+    fun setVisibleMatchdayIndex(index: Int) {
+        savedStateHandle["visibleMatchdayIndex"] = index
     }
 
     fun selectDate(date: LocalDate) {
@@ -95,7 +105,24 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
         _showCallUpDialog.value = show
     }
 
-    fun setVisibleMatchdayIndex(index: Int) {
-        _visibleMatchdayIndex.value = index
+    private var hasInitializedMatchdayIndex = false
+
+    fun ensureInitialVisibleMatchdayIndex(matchdays: List<MatchdayEntity>) {
+        if (hasInitializedMatchdayIndex) return
+
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val index = matchdays.indexOfFirst {
+            runCatching { LocalDate.parse(it.date, formatter) }.getOrNull()?.let { date ->
+                date >= today && (date.dayOfWeek == java.time.DayOfWeek.SATURDAY || date.dayOfWeek == java.time.DayOfWeek.SUNDAY)
+            } ?: false
+        }
+
+        if (index >= 0) {
+            setVisibleMatchdayIndex(index)
+        }
+
+        hasInitializedMatchdayIndex = true
     }
 }

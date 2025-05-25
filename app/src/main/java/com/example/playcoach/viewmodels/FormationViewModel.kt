@@ -1,5 +1,7 @@
 package com.example.playcoach.viewmodels
 
+import androidx.compose.ui.unit.DpOffset
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playcoach.data.entities.FormationEntity
@@ -13,7 +15,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class FormationViewModel @Inject constructor(
-    private val repository: FormationRepository
+    private val repository: FormationRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _formations = MutableStateFlow<List<FormationEntity>>(emptyList())
@@ -25,6 +28,22 @@ class FormationViewModel @Inject constructor(
     private val _selectedFormation = MutableStateFlow<FormationEntity?>(null)
     val selectedFormation: StateFlow<FormationEntity?> = _selectedFormation.asStateFlow()
 
+    var players: List<Pair<Int, DpOffset>>
+        get() = savedStateHandle.get<List<Pair<Int, DpOffset>>>("players") ?: emptyList()
+        set(value) { savedStateHandle["players"] = value }
+
+    var selectedPlayer: Int?
+        get() = savedStateHandle["selectedPlayer"]
+        set(value) { savedStateHandle["selectedPlayer"] = value }
+
+    var formationName: String
+        get() = savedStateHandle.get<String>("formationName") ?: ""
+        set(value) { savedStateHandle["formationName"] = value }
+
+    var expanded: Boolean
+        get() = savedStateHandle.get<Boolean>("expanded") ?: false
+        set(value) { savedStateHandle["expanded"] = value }
+
     fun loadFormationsByTeam(team: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getFormationsByTeam(team).collectLatest {
@@ -33,7 +52,7 @@ class FormationViewModel @Inject constructor(
         }
     }
 
-    fun loadPositionsForFormation(formationId: Int) {
+    private fun loadPositionsForFormation(formationId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getPositionsByFormation(formationId).collectLatest {
                 _positions.value = it

@@ -1,20 +1,21 @@
 package com.example.playcoach.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.playcoach.ui.screens.*
 import com.example.playcoach.viewmodels.*
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
 
-    val selectedTeam = remember { mutableStateOf<String?>(null) }
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val selectedTeam by mainViewModel.selectedTeamFlow.collectAsState()
 
     NavHost(
         navController = navController,
@@ -32,7 +33,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable("team_selection") {
             SelectTeam(
                 onTeamSelected = { team ->
-                    selectedTeam.value = team
+                    mainViewModel.selectedTeam = team
                     navController.navigate("calendar")
                 },
                 onAddTeam = { navController.navigate("add_team") },
@@ -57,7 +58,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
@@ -72,7 +73,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
@@ -90,7 +91,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToPlayerDetails = { player ->
                     navController.navigate("player_details/${player.number}")
                 },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
@@ -109,13 +110,13 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToPlayerStats = { navController.navigate("player_stats") },
                 onNavigateToPlayerAttendance = { navController.navigate("player_attendance") },
                 onNavigateToMatchdays = { navController.navigate("matches") },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
         composable("matches") {
             Matches (
-                teamName = selectedTeam.value,
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
@@ -142,7 +143,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToMatchDetail = { matchdayId ->
                     navController.navigate("match_details/$matchdayId")
                 },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
@@ -169,7 +170,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToPlayerDetail = { player ->
                     navController.navigate("player_details/${player.number}")
                 },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
@@ -193,13 +194,13 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 
         composable("tactical_board") {
             TacticalBoard(
-                teamName = selectedTeam.value,
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
@@ -223,7 +224,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam.value
+                teamName = selectedTeam
             )
         }
 

@@ -33,6 +33,7 @@ fun Calendar(
     val playerViewModel: PlayerViewModel = hiltViewModel()
     val callUpViewModel: CallUpViewModel = hiltViewModel()
 
+    // Carga de datos si cambia el equipo
     LaunchedEffect(teamName) {
         teamName?.let { team ->
             matchdayViewModel.updateSelectedTeam(team)
@@ -53,21 +54,34 @@ fun Calendar(
         }
     }
 
-    LaunchedEffect(sortedMatchdays) {
-        val index = sortedMatchdays.indexOfFirst {
-            runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()?.let { date ->
-                date >= today && (date.dayOfWeek == java.time.DayOfWeek.SATURDAY || date.dayOfWeek == java.time.DayOfWeek.SUNDAY)
-            } ?: false
-        }
-        if (index >= 0) {
-            calendarViewModel.setVisibleMatchdayIndex(index)
+    // Solo una vez: establecer índice visible inicial cuando haya datos
+    val initialIndexComputed = remember { mutableStateOf(false) }
+
+    LaunchedEffect(matchdays) {
+        if (!initialIndexComputed.value && matchdays.isNotEmpty()) {
+            val sorted = matchdays.sortedBy {
+                runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
+            }
+            val index = sorted.indexOfFirst {
+                runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()?.let { date ->
+                    date >= today && (date.dayOfWeek == java.time.DayOfWeek.SATURDAY || date.dayOfWeek == java.time.DayOfWeek.SUNDAY)
+                } ?: false
+            }
+            if (index >= 0) {
+                calendarViewModel.setVisibleMatchdayIndex(index)
+            }
+            initialIndexComputed.value = true
         }
     }
 
-    LaunchedEffect(sortedMatchdays, visibleMatchdayIndex) {
-        val matchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
-        matchday?.team?.let {
-            playerViewModel.loadPlayersByTeam(it)
+    // Evitar recargas innecesarias
+    var lastLoadedTeam by remember { mutableStateOf<String?>(null) }
+    val visibleTeam = sortedMatchdays.getOrNull(visibleMatchdayIndex)?.team
+
+    LaunchedEffect(visibleTeam) {
+        if (visibleTeam != null && visibleTeam != lastLoadedTeam) {
+            lastLoadedTeam = visibleTeam
+            playerViewModel.loadPlayersByTeam(visibleTeam)
         }
     }
 

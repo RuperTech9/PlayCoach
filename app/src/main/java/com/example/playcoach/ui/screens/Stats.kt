@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -48,34 +49,38 @@ fun Stats(
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
         onNavigateToOthers = onNavigateToOthers
-    ) {
-        Box(
-            modifier = Modifier
+    ) { modifier ->
+        LazyColumn(
+            modifier = modifier
                 .fillMaxSize()
                 .background(Color(0xFFCCE5FF))
-                .padding(20.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            item {
                 StatsCard(
                     imageRes = R.drawable.ic_calendar,
                     title = "Partidos (Editar Jornadas)",
                     onClick = onNavigateToMatchdays
                 )
-
+            }
+            item {
                 StatsCard(
                     imageRes = R.drawable.ic_monitoring,
                     title = "Estadísticas equipo",
                     onClick = onNavigateToTeamStats
                 )
+            }
+            item {
                 StatsCard(
                     imageRes = R.drawable.ic_estadisticas,
                     title = "Estadísticas jugadores",
                     onClick = onNavigateToPlayerStats
                 )
+            }
+            item {
                 StatsCard(
                     imageRes = R.drawable.ic_asistencia,
                     title = "Asistencia jugadores",

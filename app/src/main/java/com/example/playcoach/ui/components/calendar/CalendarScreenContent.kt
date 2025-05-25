@@ -2,6 +2,7 @@ package com.example.playcoach.ui.components.calendar
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -57,6 +58,9 @@ fun CalendarScreenContent(
             runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
         }
     }
+    LaunchedEffect(sortedMatchdays) {
+        calendarViewModel.ensureInitialVisibleMatchdayIndex(sortedMatchdays)
+    }
 
     val visibleMatchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
 
@@ -71,74 +75,93 @@ fun CalendarScreenContent(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            MonthNavigationBar(
-                currentMonth = currentMonth,
-                currentYear = currentYear,
-                onPreviousMonth = { calendarViewModel.previousMonth() },
-                onNextMonth = { calendarViewModel.nextMonth() }
-            )
-
-            val daysInMonth = YearMonth.of(currentYear, currentMonth).lengthOfMonth()
-            val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1).dayOfWeek.value
-            val days = (1..daysInMonth).map { day -> LocalDate.of(currentYear, currentMonth, day) }
-
-            LazyVerticalGrid(columns = GridCells.Fixed(7), modifier = Modifier.fillMaxWidth()) {
-                items(listOf("L", "M", "X", "J", "V", "S", "D")) { letter ->
-                    Box(
-                        modifier = Modifier.size(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = letter,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = Color(0xFF00205B)
-                        )
-                    }
-                }
-
-                items(firstDayOfMonth - 1) {
-                    Spacer(modifier = Modifier.size(48.dp))
-                }
-
-                items(days) { date ->
-                    CalendarDay(
-                        date = date,
-                        today = today,
-                        groupedEvents = groupedEvents,
-                        groupedMatchdays = groupedMatchdays,
-                        onEventClick = {
-                            calendarViewModel.selectEvent(it)
-                            calendarViewModel.selectDate(date)
-                        },
-                        onMatchdayClick = { calendarViewModel.selectMatchday(it) },
-                        onEmptyDayClick = {
-                            calendarViewModel.selectDate(date)
-                            calendarViewModel.setShowAddEventDialog(true)
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            if (sortedMatchdays.isNotEmpty()) {
-                MatchdayBottomCard(
-                    matchdays = sortedMatchdays,
-                    visibleMatchdayIndex = visibleMatchdayIndex,
-                    onIndexChange = calendarViewModel::setVisibleMatchdayIndex,
-                    onMatchdayClick = calendarViewModel::selectMatchday,
-                    initialVisibleIndex = sortedMatchdays.indexOfFirst {
-                        runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()?.let { date ->
-                            date >= today && (date.dayOfWeek == java.time.DayOfWeek.SATURDAY || date.dayOfWeek == java.time.DayOfWeek.SUNDAY)
-                        } ?: false
-                    },
-                    playerViewModel = playerViewModel,
-                    callUpViewModel = callUpViewModel
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                MonthNavigationBar(
+                    currentMonth = currentMonth,
+                    currentYear = currentYear,
+                    onPreviousMonth = { calendarViewModel.previousMonth() },
+                    onNextMonth = { calendarViewModel.nextMonth() }
                 )
             }
 
+            item {
+                val daysInMonth = YearMonth.of(currentYear, currentMonth).lengthOfMonth()
+                val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1).dayOfWeek.value
+                val days = (1..daysInMonth).map { day -> LocalDate.of(currentYear, currentMonth, day) }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(7),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 400.dp), // puedes ajustar este valor
+                    userScrollEnabled = false // para que no interfiera con el scroll vertical
+                ) {
+                    items(listOf("L", "M", "X", "J", "V", "S", "D")) { letter ->
+                        Box(
+                            modifier = Modifier.size(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = letter,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color(0xFF00205B)
+                            )
+                        }
+                    }
+
+                    items(firstDayOfMonth - 1) {
+                        Spacer(modifier = Modifier.size(48.dp))
+                    }
+
+                    items(days) { date ->
+                        CalendarDay(
+                            date = date,
+                            today = today,
+                            groupedEvents = groupedEvents,
+                            groupedMatchdays = groupedMatchdays,
+                            onEventClick = {
+                                calendarViewModel.selectEvent(it)
+                                calendarViewModel.selectDate(date)
+                            },
+                            onMatchdayClick = { calendarViewModel.selectMatchday(it) },
+                            onEmptyDayClick = {
+                                calendarViewModel.selectDate(date)
+                                calendarViewModel.setShowAddEventDialog(true)
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(12.dp))
+            }
+
+            item {
+                if (sortedMatchdays.isNotEmpty()) {
+                    MatchdayBottomCard(
+                        matchdays = sortedMatchdays,
+                        visibleMatchdayIndex = visibleMatchdayIndex,
+                        onIndexChange = calendarViewModel::setVisibleMatchdayIndex,
+                        onMatchdayClick = calendarViewModel::selectMatchday,
+                        initialVisibleIndex = sortedMatchdays.indexOfFirst {
+                            runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()?.let { date ->
+                                date >= today && (date.dayOfWeek == java.time.DayOfWeek.SATURDAY || date.dayOfWeek == java.time.DayOfWeek.SUNDAY)
+                            } ?: false
+                        },
+                        playerViewModel = playerViewModel,
+                        callUpViewModel = callUpViewModel
+                    )
+                }
+            }
         }
 
         if (showDateSelector) {

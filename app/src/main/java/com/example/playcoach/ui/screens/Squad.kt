@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.TeamsData
-import com.example.playcoach.data.entities.CoachEntity
 import com.example.playcoach.data.entities.PlayerEntity
 import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.viewmodels.CoachViewModel
 import com.example.playcoach.viewmodels.PlayerViewModel
+import com.example.playcoach.viewmodels.SquadViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,6 +46,7 @@ fun Squad(
 ) {
     val coachViewModel: CoachViewModel = hiltViewModel()
     val playerViewModel: PlayerViewModel = hiltViewModel()
+    val squadViewModel: SquadViewModel = hiltViewModel()
 
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
@@ -57,13 +58,12 @@ fun Squad(
     val players by playerViewModel.players.collectAsState()
     val coaches by coachViewModel.coaches.collectAsState()
 
-    var showCoachDialog by remember { mutableStateOf(false) }
-    var showPlayerDialog by remember { mutableStateOf(false) }
+    var showCoachDialog by remember { mutableStateOf(squadViewModel.showCoachDialog) }
+    var showPlayerDialog by remember { mutableStateOf(squadViewModel.showPlayerDialog) }
+    var coachToDelete by remember { mutableStateOf(squadViewModel.coachToDelete) }
+    var playerToDelete by remember { mutableStateOf(squadViewModel.playerToDelete) }
+    var errorMessage by remember { mutableStateOf(squadViewModel.errorMessage) }
 
-    var coachToDelete by remember { mutableStateOf<CoachEntity?>(null) }
-    var playerToDelete by remember { mutableStateOf<PlayerEntity?>(null) }
-
-    var errorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
     BaseScreen(
@@ -91,7 +91,10 @@ fun Squad(
                     titleColor = Color(0xFF00205B),
                     titleSize = 20.sp,
                     fabColor = Color(0xFF1A73E8),
-                    fabOnClick = { showCoachDialog = true },
+                    fabOnClick = {
+                        showCoachDialog = true
+                        squadViewModel.showCoachDialog = true
+                    },
                     content = {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -101,7 +104,10 @@ fun Squad(
                                 CoachCardItem(
                                     text = coach.name,
                                     deleteText = "Eliminar Entrenador",
-                                    onDeleteClick = { coachToDelete = coach }
+                                    onDeleteClick = {
+                                        coachToDelete = coach
+                                        squadViewModel.coachToDelete = coach
+                                    }
                                 )
                             }
                         }
@@ -115,7 +121,10 @@ fun Squad(
                     titleColor = Color(0xFF00205B),
                     titleSize = 20.sp,
                     fabColor = Color(0xFF4CAF50),
-                    fabOnClick = { showPlayerDialog = true },
+                    fabOnClick = {
+                        showPlayerDialog = true
+                        squadViewModel.showPlayerDialog = true
+                    },
                     content = {
                         val sortedPlayers by remember(players) {
                             derivedStateOf { players.sortedBy { it.number } }
@@ -129,7 +138,10 @@ fun Squad(
                                 PlayerCardItem(
                                     team = teamName.orEmpty(),
                                     player = player,
-                                    onDeleteClick = { playerToDelete = player },
+                                    onDeleteClick = {
+                                        playerToDelete = player
+                                        squadViewModel.playerToDelete = player
+                                    },
                                     onInfoClick = { onNavigateToPlayerDetails(player) }
                                 )
                             }
@@ -159,10 +171,15 @@ fun Squad(
                             name = name
                         )
                         errorMessage = if (!ok) "Máximo 3 entrenadores en este equipo." else null
+                        squadViewModel.errorMessage = errorMessage
                         showCoachDialog = false
+                        squadViewModel.showCoachDialog = false
                     }
                 },
-                onDismiss = { showCoachDialog = false }
+                onDismiss = {
+                    showCoachDialog = false
+                    squadViewModel.showCoachDialog = false
+                }
             )
         }
 
@@ -179,16 +196,24 @@ fun Squad(
                             position = position
                         )
                         errorMessage = if (!ok) "El dorsal $number ya está en uso en este equipo." else null
+                        squadViewModel.errorMessage = errorMessage
                         showPlayerDialog = false
+                        squadViewModel.showPlayerDialog = false
                     }
                 },
-                onDismiss = { showPlayerDialog = false }
+                onDismiss = {
+                    showPlayerDialog = false
+                    squadViewModel.showPlayerDialog = false
+                }
             )
         }
 
         if (coachToDelete != null) {
             AlertDialog(
-                onDismissRequest = { coachToDelete = null },
+                onDismissRequest = {
+                    coachToDelete = null
+                    squadViewModel.coachToDelete = null
+                },
                 title = { Text("¿Eliminar Entrenador?") },
                 text = {
                     Text("Vas a eliminar a '${coachToDelete!!.name}' y sus estadísticas. ¿Deseas continuar?")
@@ -197,6 +222,7 @@ fun Squad(
                     Button(onClick = {
                         val localCoach = coachToDelete
                         coachToDelete = null
+                        squadViewModel.coachToDelete = null
                         if (localCoach != null) {
                             scope.launch {
                                 coachViewModel.deleteCoach(localCoach)
@@ -207,7 +233,10 @@ fun Squad(
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { coachToDelete = null }) {
+                    TextButton(onClick = {
+                        coachToDelete = null
+                        squadViewModel.coachToDelete = null
+                    }) {
                         Text("Cancelar")
                     }
                 }
@@ -216,7 +245,10 @@ fun Squad(
 
         if (playerToDelete != null) {
             AlertDialog(
-                onDismissRequest = { playerToDelete = null },
+                onDismissRequest = {
+                    playerToDelete = null
+                    squadViewModel.playerToDelete = null
+                },
                 title = { Text("¿Eliminar Jugador?") },
                 text = {
                     Text("Vas a eliminar a '${playerToDelete!!.firstName}' y sus estadísticas. ¿Deseas continuar?")
@@ -225,6 +257,7 @@ fun Squad(
                     Button(onClick = {
                         val localPlayer = playerToDelete
                         playerToDelete = null
+                        squadViewModel.playerToDelete = null
                         if (localPlayer != null) {
                             scope.launch {
                                 playerViewModel.deletePlayer(localPlayer)
@@ -235,7 +268,10 @@ fun Squad(
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { playerToDelete = null }) {
+                    TextButton(onClick = {
+                        playerToDelete = null
+                        squadViewModel.playerToDelete = null
+                    }) {
                         Text("Cancelar")
                     }
                 }
