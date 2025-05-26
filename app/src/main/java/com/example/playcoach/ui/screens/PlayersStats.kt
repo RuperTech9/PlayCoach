@@ -1,10 +1,15 @@
 package com.example.playcoach.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,10 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.playcoach.R
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.viewmodels.PlayerStatViewModel
@@ -92,97 +98,92 @@ fun PlayersStats(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(vertical = 4.dp)
-            ) {
-                items(sortedList) { player ->
-                    PlayerStatsCard(
-                        team = teamName.orEmpty(),
-                        player = player,
-                        onClick = { onNavigateToPlayerDetail(player) }
-                    )
-                }
-            }
+            PlayerStatsGrid(
+                players = sortedList,
+                teamName = teamName.orEmpty(),
+                onClick = { onNavigateToPlayerDetail(it) }
+            )
         }
     }
 }
 
 @Composable
-fun PlayerStatsCard(
-    team: String,
-    player: PlayerStats,
-    onClick: () -> Unit
+fun PlayerStatsGrid(
+    players: List<PlayerStats>,
+    teamName: String,
+    onClick: (PlayerStats) -> Unit
 ) {
-    val imageRes = remember(team, player.number) {
-        TeamsData.getPlayerImageForTeamAndNumber(team, player.number)
-    }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .clip(MaterialTheme.shapes.medium),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFF00205B)),
-        elevation = CardDefaults.cardElevation(3.dp),
-        onClick = onClick
+    val sorted = players.sortedBy { it.number }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        items(sorted) { player ->
+            var visible by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) { visible = true }
 
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = "Photo of ${player.name}",
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 })
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                Card(
+                    onClick = { onClick(player) },
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    border = BorderStroke(1.dp, Color(0xFF00205B)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(0.8f)
+                        .clip(MaterialTheme.shapes.medium)
                 ) {
-                    Text(
-                        text = "${player.number} - ${player.name}",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF00205B),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_sln),
-                        contentDescription = "Escudo equipo",
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                    )
-                }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 12.dp, vertical = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val imageRes = remember(teamName, player.number) {
+                                TeamsData.getPlayerImageForTeamAndNumber(teamName, player.number)
+                            }
 
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text("Goles: ${player.goals}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("Asist: ${player.assists}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                }
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text("Min: ${player.minutesPlayed}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("Amar: ${player.yellowCards}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("Rojas: ${player.redCards}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                }
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text("Part: ${player.matchesPlayed}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("Tit: ${player.starts}", fontSize = 14.sp, modifier = Modifier.weight(1f))
-                    Text("Supl: ${player.substitutes}", fontSize = 14.sp, modifier = Modifier.weight(1f))
+                            Image(
+                                painter = painterResource(id = imageRes),
+                                contentDescription = "Foto",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, Color(0xFF00205B), CircleShape)
+                            )
+
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "${player.number} - ${player.name}",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF00205B),
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "G ${player.goals} | A ${player.assists} | M ${player.minutesPlayed}",
+                                    fontSize = 12.sp,
+                                    color = Color.DarkGray,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    text = "🟨 ${player.yellowCards}  🟥 ${player.redCards}  🎮 ${player.matchesPlayed}",
+                                    fontSize = 12.sp,
+                                    color = Color.DarkGray,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
