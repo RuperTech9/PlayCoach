@@ -50,19 +50,21 @@ fun TacticalBoard(
     var selectedPlayer by remember { mutableStateOf(formationViewModel.selectedPlayer) }
     var formationName by remember { mutableStateOf(formationViewModel.formationName) }
     var expanded by remember { mutableStateOf(formationViewModel.expanded) }
-
     var showDialog by remember { mutableStateOf(false) }
     var formationToDelete by remember { mutableStateOf<FormationEntity?>(null) }
-
-    val playerSizeDp = 60.dp
     var fieldSizePx by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
 
-    val fieldWidthDp = 360.dp
-    val fieldHeightDp = 480.dp
-
     val boxWidthDp = with(density) { fieldSizePx.width.toDp() }
     val boxHeightDp = with(density) { fieldSizePx.height.toDp() }
+
+    val scaleFactor = (boxWidthDp.value / 360f).coerceAtLeast(0.6f)
+    val playerSizeDp = (60f * scaleFactor).dp
+    val fontSizeSp = (12f * scaleFactor).sp
+    val subSizeDp = playerSizeDp * 0.8f
+    val subFontSizeSp = fontSizeSp * 0.8f
+
+    var percentPositions by remember { mutableStateOf<List<Pair<Int, Pair<Float, Float>>>>(emptyList()) }
 
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
@@ -71,30 +73,43 @@ fun TacticalBoard(
         }
     }
 
-    LaunchedEffect(teamPlayers, savedPositions) {
-        players = if (savedPositions.isNotEmpty()) {
-            savedPositions.map { pos ->
-                pos.playerId to DpOffset(pos.positionX.dp, pos.positionY.dp)
+    LaunchedEffect(selectedFormation?.id, savedPositions, teamPlayers) {
+        if (selectedFormation != null && savedPositions.isNotEmpty()) {
+            percentPositions = savedPositions.map { pos ->
+                pos.playerId to (pos.positionX to pos.positionY)
             }
         } else {
-            teamPlayers.take(11).mapIndexed { index, player ->
-                player.number to when {
-                    player.position == "Portero" -> DpOffset(150.dp, 380.dp)
-                    index == 0 -> DpOffset(40.dp, 300.dp)
-                    index == 1 -> DpOffset(150.dp, 300.dp)
-                    index == 2 -> DpOffset(260.dp, 300.dp)
-                    index == 3 -> DpOffset(20.dp, 210.dp)
-                    index == 4 -> DpOffset(90.dp, 210.dp)
-                    index == 5 -> DpOffset(200.dp, 210.dp)
-                    index == 6 -> DpOffset(280.dp, 210.dp)
-                    index == 7 -> DpOffset(40.dp, 120.dp)
-                    index == 8 -> DpOffset(150.dp, 120.dp)
-                    else -> DpOffset(260.dp, 120.dp)
+            percentPositions = teamPlayers.take(11).mapIndexed { index, player ->
+                val (x, y) = when {
+                    player.position == "Portero" -> 43.0f to 79.1f
+                    index == 0 -> 11.1f to 62.5f
+                    index == 1 -> 43.0f to 62.5f
+                    index == 2 -> 72.2f to 62.5f
+                    index == 3 -> 5.5f to 43.7f
+                    index == 4 -> 26.0f to 43.7f
+                    index == 5 -> 61.0f to 43.7f
+                    index == 6 -> 81.0f to 43.7f
+                    index == 7 -> 11.1f to 25.0f
+                    index == 8 -> 43.0f to 25.0f
+                    else -> 72.2f to 25.0f
                 }
+                player.number to (x to y)
             }
         }
-        formationViewModel.players = players
     }
+
+    LaunchedEffect(percentPositions, boxWidthDp, boxHeightDp) {
+        if (boxWidthDp > 0.dp && boxHeightDp > 0.dp) {
+            players = percentPositions.map { (id, percent) ->
+                id to DpOffset(
+                    (percent.first / 100f) * boxWidthDp,
+                    (percent.second / 100f) * boxHeightDp
+                )
+            }
+            formationViewModel.players = players
+        }
+    }
+
 
     BaseScreen(
         title = "Formaciones",
@@ -215,17 +230,26 @@ fun TacticalBoard(
             }
 
             item {
-                Box(
+                BoxWithConstraints(
                     modifier = Modifier
-                        .height(500.dp)
                         .fillMaxWidth()
+                        .aspectRatio(3f / 4f)
                         .background(Color(0xFFCCE5FF)),
                     contentAlignment = Alignment.Center
                 ) {
+                    val density = LocalDensity.current
+                    val boxWidthDp = maxWidth
+                    val boxHeightDp = maxHeight
+                    val playerSizeDp = (50f * scaleFactor).dp
+
+
+                    val pixelSize = remember { mutableStateOf(IntSize.Zero) }
+
                     Box(
                         modifier = Modifier
-                            .size(fieldWidthDp, fieldHeightDp)
+                            .size(boxWidthDp, boxHeightDp)
                             .onGloballyPositioned { layout ->
+                                pixelSize.value = layout.size
                                 fieldSizePx = layout.size
                             }
                     ) {
@@ -235,20 +259,28 @@ fun TacticalBoard(
                             contentScale = ContentScale.FillBounds,
                             modifier = Modifier.matchParentSize()
                         )
+
                         players.forEach { (id, offset) ->
                             val player = teamPlayers.find { it.number == id }
                             if (player != null) {
                                 val isSelected = selectedPlayer == id
+
+                                // Calcular el offset proporcionalmente si las dimensiones han cambiado
+                                val offsetX = offset.x
+                                val offsetY = offset.y
+
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
-                                        .offset(offset.x, offset.y)
+                                        .offset(offsetX, offsetY)
                                         .background(if (isSelected) Color.LightGray else Color.Transparent)
                                         .pointerInput(id) {
                                             detectDragGestures { change, dragAmount ->
                                                 change.consume()
+
                                                 val dxDp = with(density) { dragAmount.x.toDp() }
                                                 val dyDp = with(density) { dragAmount.y.toDp() }
+
                                                 players = players.map {
                                                     if (it.first == id) {
                                                         val newX = (it.second.x + dxDp).coerceIn(0.dp, boxWidthDp - playerSizeDp)
@@ -256,6 +288,7 @@ fun TacticalBoard(
                                                         id to DpOffset(newX, newY)
                                                     } else it
                                                 }
+
                                                 formationViewModel.players = players
                                             }
                                         }
@@ -292,17 +325,12 @@ fun TacticalBoard(
                                         contentScale = ContentScale.Fit
                                     )
 
-                                    val playerText = when {
-                                        player.nickname.isNotBlank() -> player.nickname
-                                        else -> player.firstName
-                                    }
-
                                     Text(
-                                        playerText,
+                                        text = player.nickname.ifBlank { player.firstName },
                                         style = MaterialTheme.typography.labelMedium,
                                         color = Color(0xFF00205B),
                                         maxLines = 1,
-                                        fontSize = 12.sp
+                                        fontSize = fontSizeSp
                                     )
                                 }
                             }
@@ -310,6 +338,7 @@ fun TacticalBoard(
                     }
                 }
             }
+
 
             item {
                 val starters by remember(players) {
@@ -365,7 +394,7 @@ fun TacticalBoard(
                             Image(
                                 painter = painterResource(id = subImage),
                                 contentDescription = "Substitute",
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(subSizeDp) ,
                                 contentScale = ContentScale.Fit
                             )
 
@@ -378,7 +407,7 @@ fun TacticalBoard(
                             Text(
                                 subText,
                                 color = Color(0xFF00205B),
-                                fontSize = 12.sp,
+                                fontSize = subFontSizeSp,
                                 maxLines = 1
                             )
                         }
@@ -391,11 +420,13 @@ fun TacticalBoard(
                     onClick = {
                         val formationId = selectedFormation?.id ?: return@Button
                         val positions = players.map { (id, offset) ->
+                            val percentX = (offset.x / boxWidthDp) * 100f
+                            val percentY = (offset.y / boxHeightDp) * 100f
                             PlayerPositionEntity(
                                 formationId = formationId,
                                 playerId = id,
-                                positionX = offset.x.value,
-                                positionY = offset.y.value
+                                positionX = percentX,
+                                positionY = percentY
                             )
                         }
                         scope.launch {
