@@ -161,15 +161,16 @@ fun PlayerCard(state: PlayerDetailState) {
                 painter = painterResource(id = imageRes),
                 contentDescription = "Picture of ${state.name}",
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(60.dp)
                     .clip(CircleShape)
+                    .border(2.dp, Color(0xFF00205B), CircleShape)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${state.number} - ${state.name}",
+                    text = "${state.number} - ${state.name} ${state.lastname}",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF00205B)

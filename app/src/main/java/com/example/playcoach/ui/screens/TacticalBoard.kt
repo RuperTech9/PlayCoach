@@ -59,10 +59,10 @@ fun TacticalBoard(
     val boxHeightDp = with(density) { fieldSizePx.height.toDp() }
 
     val scaleFactor = (boxWidthDp.value / 360f).coerceAtLeast(0.6f)
-    val playerSizeDp = (60f * scaleFactor).dp
-    val fontSizeSp = (12f * scaleFactor).sp
-    val subSizeDp = playerSizeDp * 0.8f
-    val subFontSizeSp = fontSizeSp * 0.8f
+    val playerSizeDp = (40f * scaleFactor).dp
+    val fontSizeSp = (10f * scaleFactor).sp
+    val subSizeDp = playerSizeDp * 1f
+    val subFontSizeSp = fontSizeSp * 1f
 
     var percentPositions by remember { mutableStateOf<List<Pair<Int, Pair<Float, Float>>>>(emptyList()) }
 
@@ -401,7 +401,7 @@ fun TacticalBoard(
                             val subText = if (player.nickname.isNotBlank()) {
                                 "${player.number} - \"${player.nickname}\""
                             } else {
-                                "${player.number}"
+                                "${player.number}  - \"${player.firstName}\""
                             }
 
                             Text(

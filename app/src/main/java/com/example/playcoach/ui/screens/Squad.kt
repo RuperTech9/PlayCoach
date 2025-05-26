@@ -166,7 +166,7 @@ fun Squad(
         AlertDialog(
             onDismissRequest = { playerToDelete = null },
             title = { Text("¿Eliminar jugador?") },
-            text = { Text("Vas a eliminar a ${player.firstName}. ¿Deseas continuar?") },
+            text = { Text("Vas a eliminar a ${player.nickname}. ¿Deseas continuar?") },
             confirmButton = {
                 Button(onClick = {
                     scope.launch {
@@ -182,28 +182,6 @@ fun Squad(
             }
         )
     }
-
-    coachToDelete?.let { coach ->
-        AlertDialog(
-            onDismissRequest = { coachToDelete = null },
-            title = { Text("¿Eliminar entrenador?") },
-            text = { Text("Vas a eliminar a ${coach.name}. ¿Deseas continuar?") },
-            confirmButton = {
-                Button(onClick = {
-                    scope.launch {
-                        coachViewModel.deleteCoach(coach)
-                        coachToDelete = null
-                    }
-                }) { Text("Eliminar") }
-            },
-            dismissButton = {
-                TextButton(onClick = { coachToDelete = null }) {
-                    Text("Cancelar")
-                }
-            }
-        )
-    }
-
 
     coachToDelete?.let { coach ->
         AlertDialog(
@@ -290,7 +268,7 @@ fun PlayersGrid(
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "${player.number} - ${player.firstName}",
+                                    text = "${player.number} - ${player.nickname}",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = Color(0xFF00205B),
@@ -316,7 +294,8 @@ fun PlayersGrid(
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Eliminar",
-                                tint = Color.Red
+                                tint = Color.Red,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     }

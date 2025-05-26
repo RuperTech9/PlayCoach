@@ -117,7 +117,7 @@ fun MatchdayCallUpDialog(
                                 )
                             )
                             Text(
-                                text = "${player.number} - ${player.firstName}",
+                                text = "${player.number} - ${player.nickname}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

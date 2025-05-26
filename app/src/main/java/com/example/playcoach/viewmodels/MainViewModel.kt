@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(
             savedStateHandle["selectedMatchdayId"] = value
         }
 
-    private val selectedModeFlow: StateFlow<String> = savedStateHandle
+    val selectedModeFlow: StateFlow<String> = savedStateHandle
         .getStateFlow("selectedMode", "estadísticas")
 
     var selectedMode: String
