@@ -269,7 +269,7 @@ fun PlayersGrid(
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "${player.number} - ${player.nickname}",
+                                    text = "${player.number} - ${player.nickname.ifBlank { player.firstName }}",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = Color(0xFF00205B),
