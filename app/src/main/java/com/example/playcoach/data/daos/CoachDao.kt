@@ -13,6 +13,6 @@ interface CoachDao {
     @Delete
     suspend fun deleteCoach(coach: CoachEntity)
 
-    @Query("SELECT * FROM coaches WHERE team = :team ORDER BY name")
+    @Query("SELECT * FROM coaches WHERE team = :team ORDER BY firstName")
     fun getCoachesByTeam(team: String): Flow<List<CoachEntity>>
 }

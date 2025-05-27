@@ -25,6 +25,7 @@ fun Calendar(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?,
 ) {
     val calendarViewModel: CalendarViewModel = hiltViewModel()
@@ -96,7 +97,8 @@ fun Calendar(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) {
         CalendarScreenContent(
             calendarViewModel = calendarViewModel,

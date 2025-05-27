@@ -1,6 +1,7 @@
 package com.example.playcoach.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +33,7 @@ fun TeamStats(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     onNavigateToMatchDetail: (Int) -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     val teamStatsViewModel: TeamStatsViewModel = hiltViewModel()
@@ -55,6 +57,7 @@ fun TeamStats(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
         onNavigateToOthers = onNavigateToOthers
     ) { modifier ->
         LazyColumn(
@@ -153,30 +156,60 @@ fun TeamStats(
 
 @Composable
 fun TeamStatsGrid(data: TeamStatsData) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min), // Para que la altura se ajuste
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatsCard("Victorias", data.wins.toString(), MaterialTheme.colorScheme.primary)
-            StatsCard("Empates", data.draws.toString(), MaterialTheme.colorScheme.secondary)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StatsCard("Victorias", data.wins.toString(), MaterialTheme.colorScheme.primary)
+                StatsCard("Empates", data.draws.toString(), MaterialTheme.colorScheme.secondary)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StatsCard("Derrotas", data.losses.toString(), MaterialTheme.colorScheme.error)
+                val total = data.wins + data.draws + data.losses
+                StatsCard("Partidos Jugados", total.toString(), MaterialTheme.colorScheme.tertiary)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StatsCard("Goles Marcados", data.goalsFor.toString(), MaterialTheme.colorScheme.primary)
+                StatsCard("Goles Recibidos", data.goalsAgainst.toString(), MaterialTheme.colorScheme.secondary)
+            }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Column(
+            modifier = Modifier
+                .padding(end = 90.dp)
+                .width(200.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            StatsCard("Derrotas", data.losses.toString(), MaterialTheme.colorScheme.error)
-            val total = data.wins + data.draws + data.losses
-            StatsCard("Partidos Jugados", total.toString(), MaterialTheme.colorScheme.tertiary)
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            StatsCard("Goles Marcados", data.goalsFor.toString(), MaterialTheme.colorScheme.primary)
-            StatsCard("Goles Recibidos", data.goalsAgainst.toString(), MaterialTheme.colorScheme.secondary)
+            Text(
+                text = "Gráfica Resultados",
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF00205B),
+                fontSize = 15.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            WinDrawLossPieChart(data.wins, data.draws, data.losses)
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
+
 }
 
 @Composable
@@ -186,13 +219,14 @@ fun StatsCard(title: String, value: String, color: Color) {
             .padding(horizontal = 4.dp)
             .width(150.dp)
             .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = title,
@@ -206,6 +240,30 @@ fun StatsCard(title: String, value: String, color: Color) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
             )
+        }
+    }
+}
+
+@Composable
+fun WinDrawLossPieChart(wins: Int, draws: Int, losses: Int) {
+    val total = wins + draws + losses
+    val angles = listOf(
+        360f * wins / total,
+        360f * draws / total,
+        360f * losses / total
+    )
+    val colors = listOf(Color(0xFF4CAF50), Color(0xFFFFC107), Color(0xFFF44336))
+
+    Canvas(modifier = Modifier.size(180.dp)) {
+        var startAngle = 0f
+        for (i in angles.indices) {
+            drawArc(
+                color = colors[i],
+                startAngle = startAngle,
+                sweepAngle = angles[i],
+                useCenter = true
+            )
+            startAngle += angles[i]
         }
     }
 }

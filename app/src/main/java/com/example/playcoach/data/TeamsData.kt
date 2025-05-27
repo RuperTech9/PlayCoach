@@ -14,7 +14,8 @@ object TeamsData {
     )
 
     data class CoachInfo(
-        val name: String
+        val firstName: String,
+        val lastName: String
     )
 
     data class TeamInfo(
@@ -65,8 +66,8 @@ object TeamsData {
                 PlayerInfo(23, "Nicolás", "Sanz Gámez", "Nico", "Jugador")
             ),
             coaches = listOf(
-                CoachInfo("RUPÉREZ LÓPEZ, ALEJANDRO"),
-                CoachInfo("RUPÉREZ LÓPEZ, MARIO")
+                CoachInfo("ALEJANDRO", "RUPÉREZ LÓPEZ"),
+                CoachInfo("MARIO", "RUPÉREZ LÓPEZ")
             )
         ),
         TeamInfo("Infantil B"),
@@ -79,7 +80,7 @@ object TeamsData {
     )
 
     private val imagesInfantilA = mapOf(
-        4  to R.drawable.ic_jugador,       // Cambia a tus drawables
+        4  to R.drawable.ic_jugador,
         5  to R.drawable.infantil_a_ivan,
         6  to R.drawable.infantil_a_ibra,
         7  to R.drawable.infantil_a_mendez,
@@ -98,6 +99,19 @@ object TeamsData {
         34 to R.drawable.infantil_a_diego,
         41 to R.drawable.infantil_a_valen
     )
+    private val coachImagesInfantilA = mapOf(
+        "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_ibra,
+        "MARIO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_valen
+    )
+
+    fun getCoachImageForTeamAndName(team: String, fullName: String): Int {
+        return when (team) {
+            "Infantil A" -> coachImagesInfantilA[fullName] ?: R.drawable.ic_jugador
+            else -> R.drawable.ic_jugador
+        }
+    }
+
+
 
     private val imagesInfantilB = mapOf<Int, Int>()
 

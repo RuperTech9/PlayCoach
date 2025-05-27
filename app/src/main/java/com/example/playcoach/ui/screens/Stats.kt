@@ -35,6 +35,7 @@ fun Stats(
     onNavigateToPlayerStats: () -> Unit,
     onNavigateToPlayerAttendance: () -> Unit,
     onNavigateToMatchdays: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     BaseScreen(
@@ -48,7 +49,8 @@ fun Stats(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
+        onNavigateToOthers = onNavigateToOthers,
     ) { modifier ->
         LazyColumn(
             modifier = modifier
@@ -154,6 +156,7 @@ fun StatsScreenPreview() {
         onNavigateToPlayerStats = {},
         onNavigateToPlayerAttendance = {},
         onNavigateToMatchdays = {},
+        onNavigateToSelectTeam = { },
         teamName = "Equipo"
     )
 }

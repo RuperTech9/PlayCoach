@@ -31,6 +31,7 @@ fun PlayersAbsence(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?,
 ) {
     val playerViewModel: PlayerViewModel = hiltViewModel()
@@ -88,6 +89,7 @@ fun PlayersAbsence(
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
         onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) { contentModifier ->
         Column(
             modifier = contentModifier

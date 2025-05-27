@@ -42,7 +42,8 @@ class DatabaseCallback(
                 teamInfo.coaches.forEach { coach ->
                     coachDao.insertCoach(
                         com.example.playcoach.data.entities.CoachEntity(
-                            name = coach.name,
+                            firstName = coach.firstName,
+                            lastName = coach.lastName,
                             team = teamInfo.teamName
                         )
                     )

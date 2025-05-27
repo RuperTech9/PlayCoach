@@ -1,10 +1,7 @@
 package com.example.playcoach.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playcoach.data.database.AppDatabase
 import com.example.playcoach.data.entities.CoachEntity
 import com.example.playcoach.data.repositories.CoachRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,14 +33,15 @@ class CoachViewModel @Inject constructor(
         }
     }
 
-    suspend fun addCoachIfPossible(team: String, name: String): Boolean {
+    suspend fun addCoachIfPossible(team: String, firstName: String, lastName: String): Boolean {
         return withContext(Dispatchers.IO) {
             val currentCoaches = repository.getCoachesByTeam(team).first()
             if (currentCoaches.size >= 3) {
                 return@withContext false
             }
             val newCoach = CoachEntity(
-                name = name.trim(),
+                firstName = firstName.trim(),
+                lastName = lastName,
                 team = team
             )
             repository.insertCoach(newCoach)

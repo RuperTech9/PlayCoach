@@ -16,7 +16,6 @@ interface PlayerDao {
     @Query("SELECT * FROM players WHERE team = :team ORDER BY firstName")
     fun getPlayersByTeam(team: String): Flow<List<PlayerEntity>>
 
-    // Get a player by jersey number
     @Query("SELECT * FROM players WHERE number = :playerId LIMIT 1")
     fun getPlayerByJerseyNumber(playerId: Int): Flow<PlayerEntity?>
 }

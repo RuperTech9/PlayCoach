@@ -49,6 +49,7 @@ fun Matches(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     val playerViewModel: PlayerViewModel = hiltViewModel()
@@ -99,7 +100,8 @@ fun Matches(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) { modifier ->
         Column(modifier = modifier.padding(16.dp)) {
             Text(
@@ -115,7 +117,11 @@ fun Matches(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                items(matchdays) { matchday ->
+
+                val mid = matchdays.size / 2
+                val reordered = matchdays.take(mid).zip(matchdays.drop(mid)).flatMap { listOf(it.first, it.second) }
+
+                items(reordered) { matchday ->
                     val cardColor = when {
                         !matchday.played -> Color.White// Gris claro
                         matchday.homeGoals > matchday.awayGoals -> Color(0xFFD0F8CE) // Verde claro

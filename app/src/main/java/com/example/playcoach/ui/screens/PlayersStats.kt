@@ -64,6 +64,7 @@ fun PlayersStats(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     onNavigateToPlayerDetail: (PlayerStats) -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
@@ -90,7 +91,8 @@ fun PlayersStats(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) { contentModifier ->
         Column(
             modifier = contentModifier

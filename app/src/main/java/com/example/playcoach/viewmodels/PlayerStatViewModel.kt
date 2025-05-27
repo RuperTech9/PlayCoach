@@ -49,7 +49,7 @@ class PlayerStatViewModel @Inject constructor(
                     val starts = filteredStats.count { it.wasStarter }
                     val substitutes = filteredStats.count { !it.wasStarter }
 
-                    val matchdayDetails = playerStats.map { stat ->
+                    val matchdayDetails = filteredStats.map { stat ->
                         val matchday = matchdayList.find { it.id == stat.matchdayId }
                         val description = matchday?.let {
                             "${it.time} (${it.homeGoals}-${it.awayGoals})"

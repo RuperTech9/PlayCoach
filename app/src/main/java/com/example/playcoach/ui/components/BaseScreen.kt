@@ -1,5 +1,6 @@
 package com.example.playcoach.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,6 +27,7 @@ fun BaseScreen(
     onNavigateToStats: (() -> Unit)? = null,
     onNavigateToFormations: (() -> Unit)? = null,
     onNavigateToOthers: (() -> Unit)? = null,
+    onNavigateToSelectTeam: (() -> Unit)? = null,
     content: @Composable (Modifier) -> Unit
 ) {
     Scaffold(
@@ -39,17 +41,30 @@ fun BaseScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     if (teamName != null) {
-                        Text(
-                            text = teamName,
-                            color = Color(0xFFFDF3D0),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                        Column (
+                            modifier = Modifier.padding(start = 12.dp)
+                        ) {
+                            Text(
+                                text = teamName,
+                                color = Color(0xFFFDF3D0),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .clickable { onNavigateToSelectTeam?.invoke() }
+                                    .padding(end = 8.dp)
+                            )
+                            IconButton(onClick = { onNavigateBack?.invoke() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color(0xFFFDF3D0)
+                                )
+                            }
+                        }
                     } else {
                         onNavigateBack?.let {
                             IconButton(onClick = it) {
                                 Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back",
                                     tint = Color(0xFFFDF3D0)
                                 )

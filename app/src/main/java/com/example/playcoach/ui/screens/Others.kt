@@ -25,6 +25,7 @@ fun Others(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     BaseScreen(
@@ -38,7 +39,8 @@ fun Others(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
@@ -88,6 +90,7 @@ fun OthersScreenPreview() {
         onNavigateToStats = {},
         onNavigateToFormations = {},
         onNavigateToOthers = {},
+        onNavigateToSelectTeam = {},
         teamName = "Equipo"
     )
 }

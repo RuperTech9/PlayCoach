@@ -19,6 +19,7 @@ fun Messages(
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     BaseScreen(
@@ -32,7 +33,8 @@ fun Messages(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
-        onNavigateToOthers = onNavigateToOthers
+        onNavigateToOthers = onNavigateToOthers,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
     ) { modifier ->
         Box(
             modifier = Modifier
@@ -58,6 +60,7 @@ fun MessagesScreenPreview() {
         onNavigateToStats = {},
         onNavigateToFormations = {},
         onNavigateToOthers = {},
+        onNavigateToSelectTeam = { },
         teamName = ""
     )
 }

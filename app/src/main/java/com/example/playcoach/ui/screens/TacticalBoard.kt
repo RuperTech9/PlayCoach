@@ -34,7 +34,9 @@ fun TacticalBoard(
     onNavigateToSquad: () -> Unit,
     onNavigateToStats: () -> Unit,
     onNavigateToFormations: () -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     onNavigateToOthers: () -> Unit,
+
     teamName: String?
 ) {
     val formationViewModel: FormationViewModel = hiltViewModel()
@@ -122,6 +124,7 @@ fun TacticalBoard(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
         onNavigateToOthers = onNavigateToOthers
     ) { modifier ->
 

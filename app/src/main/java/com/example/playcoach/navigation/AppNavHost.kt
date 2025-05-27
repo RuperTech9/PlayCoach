@@ -49,39 +49,43 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable("calendar") {
             Calendar(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
-                onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam
+                onNavigateToOthers = { navController.navigate("others") }
             )
         }
 
         composable("messages") {
             Messages(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
-                onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam
+                onNavigateToOthers = { navController.navigate("others") }
             )
         }
 
         composable("squad") {
             Squad(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
@@ -90,27 +94,28 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToOthers = { navController.navigate("others") },
                 onNavigateToPlayerDetails = { player ->
                     navController.navigate("player_details/${player.number}")
-                },
-                teamName = selectedTeam
+                }
             )
         }
 
         composable("stats") {
             Stats(
+
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
                 onNavigateToOthers = { navController.navigate("others") },
+                onNavigateToMatchdays = { navController.navigate("matches") },
                 onNavigateToTeamStats = { navController.navigate("team_stats") },
                 onNavigateToPlayerStats = { navController.navigate("player_stats") },
-                onNavigateToPlayerAttendance = { navController.navigate("player_attendance") },
-                onNavigateToMatchdays = { navController.navigate("matches") },
-                teamName = selectedTeam
+                onNavigateToPlayerAttendance = { navController.navigate("player_attendance") }
             )
         }
 
@@ -118,8 +123,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             Matches (
                 teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
@@ -131,9 +137,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable("team_stats") {
             TeamStats(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
@@ -142,8 +150,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToOthers = { navController.navigate("others") },
                 onNavigateToMatchDetail = { matchdayId ->
                     navController.navigate("match_details/$matchdayId")
-                },
-                teamName = selectedTeam
+                }
             )
         }
 
@@ -158,9 +165,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable("player_stats") {
             PlayersStats(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
@@ -169,8 +178,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onNavigateToOthers = { navController.navigate("others") },
                 onNavigateToPlayerDetail = { player ->
                     navController.navigate("player_details/${player.number}")
-                },
-                teamName = selectedTeam
+                }
             )
         }
 
@@ -185,16 +193,17 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable("player_attendance") {
             PlayersAbsence(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
-                onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam
+                onNavigateToOthers = { navController.navigate("others") }
             )
         }
 
@@ -202,8 +211,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             TacticalBoard(
                 teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
@@ -215,16 +225,17 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable("others") {
             Others(
+                teamName = selectedTeam,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToNotifications = { navController.navigate("notifications") },
                 onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToNotifications = { navController.navigate("notifications") },
+                onNavigateToSelectTeam = { navController.navigate("team_selection") },
                 onNavigateToCalendar = { navController.navigate("calendar") },
                 onNavigateToMessages = { navController.navigate("messages") },
                 onNavigateToSquad = { navController.navigate("squad") },
                 onNavigateToStats = { navController.navigate("stats") },
                 onNavigateToFormations = { navController.navigate("tactical_board") },
-                onNavigateToOthers = { navController.navigate("others") },
-                teamName = selectedTeam
+                onNavigateToOthers = { navController.navigate("others") }
             )
         }
 

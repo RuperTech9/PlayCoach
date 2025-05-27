@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.playcoach.R
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.data.entities.PlayerEntity
 import com.example.playcoach.data.entities.CoachEntity
@@ -49,6 +48,7 @@ fun Squad(
     onNavigateToFormations: () -> Unit,
     onNavigateToOthers: () -> Unit,
     onNavigateToPlayerDetails: (PlayerEntity) -> Unit,
+    onNavigateToSelectTeam: () -> Unit,
     teamName: String?
 ) {
     val coachViewModel: CoachViewModel = hiltViewModel()
@@ -85,6 +85,7 @@ fun Squad(
         onNavigateToSquad = onNavigateToSquad,
         onNavigateToStats = onNavigateToStats,
         onNavigateToFormations = onNavigateToFormations,
+        onNavigateToSelectTeam = onNavigateToSelectTeam,
         onNavigateToOthers = onNavigateToOthers
     ) {
         Column(Modifier.fillMaxSize()) {
@@ -151,9 +152,9 @@ fun Squad(
             )
         } else {
             AddCoachDialog(
-                onAdd = { name ->
+                onAdd = { firstName, lastName ->
                     scope.launch {
-                        coachViewModel.addCoachIfPossible(teamName.orEmpty(), name)
+                        coachViewModel.addCoachIfPossible(teamName.orEmpty(), firstName, lastName)
                         showDialog = false
                     }
                 },
@@ -187,7 +188,7 @@ fun Squad(
         AlertDialog(
             onDismissRequest = { coachToDelete = null },
             title = { Text("¿Eliminar entrenador?") },
-            text = { Text("Vas a eliminar a ${coach.name}. ¿Deseas continuar?") },
+            text = { Text("Vas a eliminar a ${coach.firstName} ${coach.lastName}. ¿Deseas continuar?") },
             confirmButton = {
                 Button(onClick = {
                     scope.launch {
@@ -331,15 +332,22 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_jugador),
-                            contentDescription = null,
-                            tint = Color(0xFF1A73E8),
-                            modifier = Modifier.size(36.dp)
+
+                        val imageId = TeamsData.getCoachImageForTeamAndName(coach.team, "${coach.firstName.uppercase()} ${coach.lastName.uppercase()}")
+
+                        Image(
+                            painter = painterResource(id = imageId),
+                            contentDescription = "Foto entrenador",
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .border(1.5.dp, Color(0xFF1A73E8), CircleShape)
                         )
+
                         Spacer(Modifier.width(16.dp))
+
                         Text(
-                            text = coach.name,
+                            text = coach.firstName + " " + coach.lastName,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFF00205B),
                             fontSize = 17.sp,
@@ -347,6 +355,7 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+
                         IconButton(onClick = { onDeleteClick(coach) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -363,10 +372,11 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
 
 @Composable
 fun AddCoachDialog(
-    onAdd: (String) -> Unit,
+    onAdd: (String, String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -385,9 +395,15 @@ fun AddCoachDialog(
                     color = Color(0xFF00205B)
                 )
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
+                    value = firstName ,
+                    onValueChange = { firstName = it },
                     label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Apellidos") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Row(
@@ -396,8 +412,8 @@ fun AddCoachDialog(
                 ) {
                     Button(
                         onClick = {
-                            if (name.isNotBlank()) {
-                                onAdd(name.trim())
+                            if (firstName.isNotBlank()) {
+                                onAdd(firstName.trim(), lastName.trim())
                             }
                         },
                         modifier = Modifier.weight(1f)
