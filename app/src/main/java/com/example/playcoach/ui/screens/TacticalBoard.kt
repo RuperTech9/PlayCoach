@@ -21,8 +21,7 @@ import com.example.playcoach.ui.components.BaseScreen
 import com.example.playcoach.viewmodels.FormationViewModel
 import com.example.playcoach.viewmodels.PlayerViewModel
 import com.example.playcoach.data.entities.FormationEntity
-import com.example.playcoach.data.entities.PlayerPositionEntity
-import kotlinx.coroutines.launch
+import com.example.playcoach.data.entities.PlayerEntity
 
 @Composable
 fun TacticalBoard(
@@ -42,31 +41,31 @@ fun TacticalBoard(
     val formationViewModel: FormationViewModel = hiltViewModel()
     val playerViewModel: PlayerViewModel = hiltViewModel()
 
-    val scope = rememberCoroutineScope()
     val teamPlayers = playerViewModel.players.collectAsState().value
     val selectedFormation = formationViewModel.selectedFormation.collectAsState().value
-    val savedPositions = formationViewModel.positions.collectAsState().value
-    val formations = formationViewModel.formations.collectAsState().value
 
     var players by remember { mutableStateOf(formationViewModel.players) }
     var selectedPlayer by remember { mutableStateOf(formationViewModel.selectedPlayer) }
-    var formationName by remember { mutableStateOf(formationViewModel.formationName) }
     var expanded by remember { mutableStateOf(formationViewModel.expanded) }
-    var showDialog by remember { mutableStateOf(false) }
-    var formationToDelete by remember { mutableStateOf<FormationEntity?>(null) }
     var fieldSizePx by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
 
     val boxWidthDp = with(density) { fieldSizePx.width.toDp() }
-    val boxHeightDp = with(density) { fieldSizePx.height.toDp() }
-
     val scaleFactor = (boxWidthDp.value / 360f).coerceAtLeast(0.6f)
     val playerSizeDp = (40f * scaleFactor).dp
     val fontSizeSp = (10f * scaleFactor).sp
     val subSizeDp = playerSizeDp * 1f
     val subFontSizeSp = fontSizeSp * 1f
 
-    var percentPositions by remember { mutableStateOf<List<Pair<Int, Pair<Float, Float>>>>(emptyList()) }
+    val predefinedFormations = listOf(
+        FormationEntity(id = 1, name = "3-4-3", team = teamName ?: ""),
+        FormationEntity(id = 2, name = "3-5-2", team = teamName ?: ""),
+        FormationEntity(id = 3, name = "4-4-2", team = teamName ?: ""),
+        FormationEntity(id = 4, name = "4-3-3", team = teamName ?: ""),
+        FormationEntity(id = 4, name = "4-5-1", team = teamName ?: ""),
+        FormationEntity(id = 5, name = "5-3-2", team = teamName ?: ""),
+        FormationEntity(id = 5, name = "5-4-1", team = teamName ?: "")
+    )
 
     LaunchedEffect(teamName) {
         if (!teamName.isNullOrBlank()) {
@@ -75,43 +74,25 @@ fun TacticalBoard(
         }
     }
 
-    LaunchedEffect(selectedFormation?.id, savedPositions, teamPlayers) {
-        if (selectedFormation != null && savedPositions.isNotEmpty()) {
-            percentPositions = savedPositions.map { pos ->
-                pos.playerId to (pos.positionX to pos.positionY)
-            }
-        } else {
-            percentPositions = teamPlayers.take(11).mapIndexed { index, player ->
-                val (x, y) = when {
-                    player.position == "Portero" -> 43.0f to 79.1f
-                    index == 0 -> 11.1f to 62.5f
-                    index == 1 -> 43.0f to 62.5f
-                    index == 2 -> 72.2f to 62.5f
-                    index == 3 -> 5.5f to 43.7f
-                    index == 4 -> 26.0f to 43.7f
-                    index == 5 -> 61.0f to 43.7f
-                    index == 6 -> 81.0f to 43.7f
-                    index == 7 -> 11.1f to 25.0f
-                    index == 8 -> 43.0f to 25.0f
-                    else -> 72.2f to 25.0f
-                }
-                player.number to (x to y)
-            }
-        }
-    }
+    LaunchedEffect(selectedFormation, fieldSizePx, teamPlayers) {
+        if (fieldSizePx.width > 0 && fieldSizePx.height > 0 && teamPlayers.isNotEmpty()) {
+            val widthDp = with(density) { fieldSizePx.width.toDp() }
+            val heightDp = with(density) { fieldSizePx.height.toDp() }
 
-    LaunchedEffect(percentPositions, boxWidthDp, boxHeightDp) {
-        if (boxWidthDp > 0.dp && boxHeightDp > 0.dp) {
-            players = percentPositions.map { (id, percent) ->
-                id to DpOffset(
-                    (percent.first / 100f) * boxWidthDp,
-                    (percent.second / 100f) * boxHeightDp
+            players = if (selectedFormation != null) {
+                getPredefinedFormationPositions(
+                    selectedFormation.name,
+                    teamPlayers,
+                    widthDp,
+                    heightDp
                 )
+            } else {
+                getPredefinedFormationPositions("3-4-3", teamPlayers, widthDp, heightDp)
             }
+
             formationViewModel.players = players
         }
     }
-
 
     BaseScreen(
         title = "Formaciones",
@@ -132,35 +113,6 @@ fun TacticalBoard(
             modifier = modifier.fillMaxSize().padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
-                if (showDialog && formationToDelete != null) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog = false },
-                        title = { Text("Confirmar eliminación") },
-                        text = { Text("¿Deseas eliminar '${formationToDelete?.name}'?") },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                scope.launch {
-                                    formationViewModel.deleteFormation(formationToDelete!!)
-                                    formationViewModel.loadFormationsByTeam(teamName ?: "")
-                                    if (selectedFormation?.id == formationToDelete?.id) {
-                                        formationViewModel.clearSelection()
-                                    }
-                                    showDialog = false
-                                    expanded = false
-                                    formationToDelete = null
-                                }
-                            }) { Text("Eliminar", color = Color.Red) }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = {
-                                showDialog = false
-                                formationToDelete = null
-                            }) { Text("Cancelar") }
-                        }
-                    )
-                }
-            }
 
             item {
                 Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
@@ -168,7 +120,7 @@ fun TacticalBoard(
                         Text(selectedFormation?.name ?: "Seleccionar formación")
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        formations.forEach { formation ->
+                        predefinedFormations.forEach { formation ->
                             DropdownMenuItem(
                                 text = {
                                     Row(
@@ -177,16 +129,6 @@ fun TacticalBoard(
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(formation.name, modifier = Modifier.padding(end = 8.dp))
-                                        IconButton(onClick = {
-                                            showDialog = true
-                                            formationToDelete = formation
-                                        }) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.ic_cerrar),
-                                                contentDescription = "Eliminar",
-                                                tint = Color.Red
-                                            )
-                                        }
                                     }
                                 },
                                 onClick = {
@@ -196,39 +138,6 @@ fun TacticalBoard(
                             )
                         }
                     }
-                }
-            }
-
-            item {
-                Row(
-                    Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = formationName,
-                        onValueChange = {
-                            formationName = it
-                            formationViewModel.formationName = it
-                        },
-                        label = { Text("Crear nueva formación") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Button(onClick = {
-                        if (!teamName.isNullOrBlank() && formationName.isNotBlank()) {
-                            val positions = players.map { (id, offset) ->
-                                PlayerPositionEntity(
-                                    formationId = 0,
-                                    playerId = id,
-                                    positionX = offset.x.value,
-                                    positionY = offset.y.value
-                                )
-                            }
-                            formationViewModel.createFormationWithPositions(formationName.trim(), teamName, positions)
-                            formationName = ""
-                            formationViewModel.formationName = ""
-                        }
-                    }) { Text("Guardar") }
                 }
             }
 
@@ -342,7 +251,6 @@ fun TacticalBoard(
                 }
             }
 
-
             item {
                 val starters by remember(players) {
                     derivedStateOf {
@@ -417,32 +325,156 @@ fun TacticalBoard(
                     }
                 }
             }
-
-            item {
-                Button(
-                    onClick = {
-                        val formationId = selectedFormation?.id ?: return@Button
-                        val positions = players.map { (id, offset) ->
-                            val percentX = (offset.x / boxWidthDp) * 100f
-                            val percentY = (offset.y / boxHeightDp) * 100f
-                            PlayerPositionEntity(
-                                formationId = formationId,
-                                playerId = id,
-                                positionX = percentX,
-                                positionY = percentY
-                            )
-                        }
-                        scope.launch {
-                            formationViewModel.updatePositions(formationId, positions)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text("Guardar Posiciones")
-                }
-            }
         }
+    }
+}
+fun getPredefinedFormationPositions(
+    name: String,
+    teamPlayers: List<PlayerEntity>,
+    widthDp: Dp,
+    heightDp: Dp
+): List<Pair<Int, DpOffset>> {
+    return when (name) {
+        "3-4-3" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 11f to 62.5f
+                index == 1 -> 43f to 62.5f
+                index == 2 -> 75f to 62.5f
+                index == 3 -> 5f to 43.7f
+                index == 4 -> 25f to 43.7f
+                index == 5 -> 61f to 43.7f
+                index == 6 -> 81f to 43.7f
+                index == 7 -> 11.1f to 25f
+                index == 8 -> 43f to 25f
+                else -> 72.2f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "3-5-2" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 11f to 62.5f
+                index == 1 -> 43f to 62.5f
+                index == 2 -> 75f to 62.5f
+                index == 3 -> 5f to 43.7f
+                index == 4 -> 25f to 43.7f
+                index == 5 -> 43f to 35f
+                index == 6 -> 61f to 43.7f
+                index == 7 -> 81f to 43.7f
+                index == 8 -> 25f to 25f
+                else -> 61f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "4-4-2" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 5f to 62.5f
+                index == 1 -> 26f to 62.5f
+                index == 2 -> 61f to 62.5f
+                index == 3 -> 81f to 62.5f
+                index == 4 -> 5f to 43.7f
+                index == 5 -> 25f to 43.7f
+                index == 6 -> 61f to 43.7f
+                index == 7 -> 81f to 43.7f
+                index == 8 -> 25f to 25f
+                else -> 61f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "4-3-3" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 5f to 62.5f
+                index == 1 -> 26f to 62.5f
+                index == 2 -> 61f to 62.5f
+                index == 3 -> 81f to 62.5f
+                index == 4 -> 19f to 43.7f
+                index == 5 -> 43f to 43.7f
+                index == 6 -> 68f to 43.7f
+                index == 7 -> 11.1f to 25f
+                index == 8 -> 43f to 25f
+                else -> 72.2f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "4-5-1" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 5f to 62.5f
+                index == 1 -> 26f to 62.5f
+                index == 2 -> 61f to 62.5f
+                index == 3 -> 81f to 62.5f
+                index == 4 -> 5f to 43.7f
+                index == 5 -> 25f to 43.7f
+                index == 6 -> 43f to 35f
+                index == 7 -> 61f to 43.7f
+                index == 8 -> 81f to 43.7f
+                else -> 43f to 20f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "5-3-2" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 5f to 62.5f
+                index == 1 -> 24f to 62.5f
+                index == 2 -> 43f to 62.5f
+                index == 3 -> 62f to 62.5f
+                index == 4 -> 81f to 62.5f
+                index == 5 -> 22f to 45f
+                index == 6 -> 43f to 40f
+                index == 7 -> 64f to 45f
+                index == 8 -> 25f to 25f
+                else -> 61f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        "5-4-1" -> teamPlayers.take(11).mapIndexed { index, player ->
+            val (xPercent, yPercent) = when {
+                player.position == "Portero" -> 43f to 79.1f
+                index == 0 -> 5f to 62.5f
+                index == 1 -> 24f to 62.5f
+                index == 2 -> 43f to 62.5f
+                index == 3 -> 62f to 62.5f
+                index == 4 -> 81f to 62.5f
+                index == 5 -> 5f to 43.7f
+                index == 6 -> 25f to 43.7f
+                index == 7 -> 61f to 43.7f
+                index == 8 -> 81f to 43.7f
+                else -> 43f to 25f
+            }
+            player.number to DpOffset(
+                (xPercent / 100f) * widthDp,
+                (yPercent / 100f) * heightDp
+            )
+        }
+
+        else -> emptyList()
     }
 }

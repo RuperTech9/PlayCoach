@@ -91,4 +91,14 @@ class FormationViewModel @Inject constructor(
         _selectedFormation.value = null
         _positions.value = emptyList()
     }
+
+    private val formationPlayersMap = mutableMapOf<Int, List<Pair<Int, DpOffset>>>()
+
+    fun getSavedPositionsForFormation(formationId: Int): List<Pair<Int, DpOffset>> {
+        return formationPlayersMap[formationId] ?: emptyList()
+    }
+
+    fun savePositionsForFormation(formationId: Int, positions: List<Pair<Int, DpOffset>>) {
+        formationPlayersMap[formationId] = positions
+    }
 }

@@ -43,21 +43,9 @@ fun BaseScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     if (teamName != null) {
-                        Row (
-                            modifier = Modifier.padding(start = 12.dp)
+                        Column (
+                            modifier = Modifier.padding(4.dp)
                         ) {
-
-
-                            IconButton(onClick = { onNavigateBack?.invoke() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                    tint = Color(0xFFFDF3D0)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
                             Card(
                                 modifier = Modifier
                                     .clickable { onNavigateToSelectTeam?.invoke() }
@@ -72,6 +60,14 @@ fun BaseScreen(
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            IconButton(onClick = { onNavigateBack?.invoke() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color(0xFFFDF3D0)
                                 )
                             }
                         }
