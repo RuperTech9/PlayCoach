@@ -60,20 +60,19 @@ fun Profile(onNavigateBack: () -> Unit) {
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("AR", fontSize = 40.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("US", fontSize = 40.sp, color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            // Name and email
             Text(
-                text = "Alex Rupérez",
+                text = "Usuario",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFD2B220)
             )
             Text(
-                text = "ruper@hotmail.com",
+                text = "usuario@gmail.com",
                 fontSize = 14.sp,
                 color = Color.LightGray
             )
@@ -87,7 +86,6 @@ fun Profile(onNavigateBack: () -> Unit) {
             ) {
                 ProfileOption("Información personal")
                 ProfileOption("Datos Club")
-                ProfileOption("Notificaciones")
                 ProfileOption("Boletín de noticias")
                 ProfileOption("Gestionar mi consentimiento")
                 ProfileOption("Ayuda")

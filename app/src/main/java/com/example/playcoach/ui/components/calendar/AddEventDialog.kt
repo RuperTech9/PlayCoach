@@ -56,6 +56,7 @@ fun AddEventDialog(
             ) {
                 Text(
                     text = "➕ Agregar Evento",
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color(0xFF00205B)
                 )

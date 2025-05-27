@@ -49,12 +49,12 @@ fun generateCallUpPdf(
 
     val isHome = matchday.homeTeam.trim().equals(matchday.team, ignoreCase = true)
     val opponent = if (isHome) matchday.awayTeam else matchday.homeTeam
-    val condition = if (isHome) "🏟️ Local" else "🛫 Visitante"
+    val condition = if (isHome) "Local" else "Visitante"
 
-    pdfDoc.add(Paragraph("📅 Fecha: ${matchday.date}").setFontSize(12f))
-    pdfDoc.add(Paragraph("🕒 Hora: ${matchday.time}").setFontSize(12f))
-    pdfDoc.add(Paragraph("⚔️ Rival: $opponent").setFontSize(12f))
-    pdfDoc.add(Paragraph("📍 Condición: $condition").setFontSize(12f))
+    pdfDoc.add(Paragraph("Fecha: ${matchday.date}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Hora: ${matchday.time}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Rival: $opponent").setFontSize(12f))
+    pdfDoc.add(Paragraph("Condición: $condition").setFontSize(12f))
 
     pdfDoc.add(LineSeparator(SolidLine(1f)))
     pdfDoc.add(Paragraph("\n"))
@@ -68,7 +68,6 @@ fun generateCallUpPdf(
         pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName}").setFontSize(12f))
     }
 
-    pdfDoc.add(Paragraph("\n\n📤 Generado con PlayCoach"))
     pdfDoc.close()
     return pdfFile
 }

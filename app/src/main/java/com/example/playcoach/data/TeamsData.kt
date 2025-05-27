@@ -475,7 +475,7 @@ object TeamsData {
         MatchdayEntity(
             id = 0,
             matchdayNumber = 30,
-            time = "hora sin definir",
+            time = "16:30h",
             date = "2025-05-31",
             homeTeam = "E.F. Chapinería",
             awayTeam = "Infantil A",

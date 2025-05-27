@@ -55,7 +55,7 @@ fun Notifications(onNavigateBack: () -> Unit) {
             items(
                 listOf(
                     "Todavía falta gente para que el equipo esté completo, ¡así que mándales un recordatorio!",
-                    "Mario acaba de unirse a tu equipo. ¡Dale la bienvenida!",
+                    "El Capitán acaba de unirse a tu equipo. ¡Dale la bienvenida!",
                     "Bienvenido a tu equipo."
                 )
             ) { notification ->

@@ -1,5 +1,6 @@
 package com.example.playcoach.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.playcoach.R
@@ -41,22 +43,35 @@ fun BaseScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     if (teamName != null) {
-                        Column (
+                        Row (
                             modifier = Modifier.padding(start = 12.dp)
                         ) {
-                            Text(
-                                text = teamName,
-                                color = Color(0xFFFDF3D0),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier
-                                    .clickable { onNavigateToSelectTeam?.invoke() }
-                                    .padding(end = 8.dp)
-                            )
+
+
                             IconButton(onClick = { onNavigateBack?.invoke() }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back",
                                     tint = Color(0xFFFDF3D0)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Card(
+                                modifier = Modifier
+                                    .clickable { onNavigateToSelectTeam?.invoke() }
+                                    .padding(bottom = 4.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                                elevation = CardDefaults.cardElevation(2.dp),
+                                border = BorderStroke(1.dp, Color(0xFFFFC107))
+                            ) {
+                                Text(
+                                    text = teamName,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }

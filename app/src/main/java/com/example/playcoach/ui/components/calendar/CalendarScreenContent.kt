@@ -1,6 +1,7 @@
 package com.example.playcoach.ui.components.calendar
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -58,11 +59,18 @@ fun CalendarScreenContent(
             runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()
         }
     }
+
+    val visibleMatchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
+
+    val lastPlayedMatchday = remember(sortedMatchdays) {
+        sortedMatchdays
+            .filter { it.played && runCatching { LocalDate.parse(it.date, dateFormatter) }.getOrNull()?.isBefore(today) == true }
+            .maxByOrNull { LocalDate.parse(it.date, dateFormatter) }
+    }
+
     LaunchedEffect(sortedMatchdays) {
         calendarViewModel.ensureInitialVisibleMatchdayIndex(sortedMatchdays)
     }
-
-    val visibleMatchday = sortedMatchdays.getOrNull(visibleMatchdayIndex)
 
     LaunchedEffect(visibleMatchday?.team) {
         visibleMatchday?.team?.let {
@@ -71,14 +79,11 @@ fun CalendarScreenContent(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -160,6 +165,74 @@ fun CalendarScreenContent(
                         playerViewModel = playerViewModel,
                         callUpViewModel = callUpViewModel
                     )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(12.dp))
+            }
+
+            item {
+                lastPlayedMatchday?.let { match ->
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 54.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        border = BorderStroke(1.dp, Color(0xFF00205B))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 10.dp, horizontal = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                "Último Partido Jugado",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Color(0xFF00205B)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Cabecera de jornada
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = "Jornada ${match.matchdayNumber}",
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF00205B)
+                                )
+                            }
+
+                            // Fecha y hora
+                            Text(
+                                text = "📅 ${match.date} — ${match.time}",
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+
+                            // Equipos
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = match.homeTeam,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF00205B)
+                                )
+                                Text(text = "vs", fontSize = 14.sp, color = Color.Gray)
+                                Text(
+                                    text = match.awayTeam,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF00205B)
+                                )
+                                Text("${match.homeGoals} - ${match.awayGoals}", fontSize = 15.sp)
+                            }
+                        }
+                    }
                 }
             }
         }

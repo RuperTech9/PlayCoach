@@ -344,7 +344,7 @@ fun StatsDialogContent(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Nº ${player.number}", fontSize = 14.sp, color = Color.Gray)
-                        Text(player.firstName, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00205B))
+                        Text(player.nickname, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00205B))
                     }
                     Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF43A047))
                 }
@@ -396,7 +396,7 @@ fun StatsDialogContent(
                                         modifier = Modifier.size(40.dp).clip(RoundedCornerShape(6.dp))
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    Text("${player.number} - ${player.firstName}", fontSize = 13.sp, color = Color(0xFF00205B))
+                                    Text("${player.number} - ${player.nickname}", fontSize = 13.sp, color = Color(0xFF00205B))
                                 }
                             }
 
@@ -424,7 +424,7 @@ fun StatsDialogContent(
                                         modifier = Modifier.size(40.dp).clip(RoundedCornerShape(6.dp))
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    Text("${player.number} - ${player.firstName}", fontSize = 13.sp, color = Color(0xFF00205B))
+                                    Text("${player.number} - ${player.nickname}", fontSize = 13.sp, color = Color(0xFF00205B))
                                 }
                             }
 

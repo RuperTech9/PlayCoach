@@ -55,6 +55,7 @@ fun MatchdayDetailsDialog(
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     text = "⚽ Detalles del Partido",
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color(0xFF00205B)
                 )

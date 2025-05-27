@@ -33,7 +33,7 @@ fun generateHeadlinePdf(
     val imageData = ImageDataFactory.create(stream.toByteArray())
     val logo = Image(imageData).setHeight(50f).setWidth(50f)
 
-    val title = Paragraph("EQUIPO JORNADA ${matchday.matchdayNumber}")
+    val title = Paragraph("JORNADA ${matchday.matchdayNumber}")
         .setFontSize(20f)
         .setBold()
         .setTextAlignment(TextAlignment.LEFT)
@@ -49,18 +49,18 @@ fun generateHeadlinePdf(
 
     val isHome = matchday.homeTeam.trim().equals(matchday.team, ignoreCase = true)
     val opponent = if (isHome) matchday.awayTeam else matchday.homeTeam
-    val condition = if (isHome) "🏟️ Local" else "🛫 Visitante"
+    val condition = if (isHome) "Local" else "Visitante"
 
-    pdfDoc.add(Paragraph("📅 Fecha: ${matchday.date}").setFontSize(12f))
-    pdfDoc.add(Paragraph("🕒 Hora: ${matchday.time}").setFontSize(12f))
-    pdfDoc.add(Paragraph("⚔️ Rival: $opponent").setFontSize(12f))
-    pdfDoc.add(Paragraph("📍 Condición: $condition").setFontSize(12f))
+    pdfDoc.add(Paragraph("Fecha: ${matchday.date}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Hora: ${matchday.time}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Rival: $opponent").setFontSize(12f))
+    pdfDoc.add(Paragraph("Condición: $condition").setFontSize(12f))
 
     pdfDoc.add(LineSeparator(SolidLine(1f)))
     pdfDoc.add(Paragraph("\n"))
 
     pdfDoc.add(
-        Paragraph("✅ TITULARES (${starters.size})")
+        Paragraph("TITULARES (${starters.size})")
             .setFontSize(16f)
             .setBold()
             .setUnderline()
@@ -75,7 +75,7 @@ fun generateHeadlinePdf(
     pdfDoc.add(Paragraph("\n"))
 
     pdfDoc.add(
-        Paragraph("🪑 SUPLENTES (${substitutes.size})")
+        Paragraph("SUPLENTES (${substitutes.size})")
             .setFontSize(16f)
             .setBold()
             .setUnderline()
@@ -87,7 +87,6 @@ fun generateHeadlinePdf(
         )
     }
 
-    pdfDoc.add(Paragraph("\n\n📤 Generado con PlayCoach"))
     pdfDoc.close()
     return pdfFile
 }

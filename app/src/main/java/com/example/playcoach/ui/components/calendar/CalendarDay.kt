@@ -42,7 +42,7 @@ fun CalendarDay(
             }
         }
         matchday != null -> Color.LightGray                   // Partido aún sin jugar
-        event != null -> Color(0xFF9F79E0)                    // Evento normal
+        event != null -> Color(0xFFC8B9E3)                    // Evento normal
         date == today -> Color(0xFFB3E5FC)                    // Día actual
         else -> Color.White
     }
