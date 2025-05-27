@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.data.entities.MatchdayEntity
 import com.example.playcoach.viewmodels.MatchdayViewModel
+import com.example.playcoach.viewmodels.PlayerStatViewModel
+import com.example.playcoach.viewmodels.PlayerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +71,6 @@ fun MatchDetail(
         } else {
             MatchDetailContent(
                 matchday = matchday,
-                matchdayViewModel = matchdayViewModel,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -79,96 +80,172 @@ fun MatchDetail(
 @Composable
 fun MatchDetailContent(
     matchday: MatchdayEntity,
-    matchdayViewModel: MatchdayViewModel,
     modifier: Modifier
 ) {
-    var homeGoals by remember { mutableStateOf(matchday.homeGoals.toString()) }
-    var awayGoals by remember { mutableStateOf(matchday.awayGoals.toString()) }
-    var summary by remember { mutableStateOf(matchday.summary) }
+    val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
+    val playerViewModel: PlayerViewModel = hiltViewModel()
+
+    val allStats by playerStatViewModel.allStats.collectAsState()
+    val allPlayers by playerViewModel.players.collectAsState()
+
+    LaunchedEffect(matchday.team) {
+        playerViewModel.loadPlayersByTeam(matchday.team)
+    }
+
+    val statsForMatchday = allStats.filter { it.matchdayId == matchday.id }
+    val scorers = statsForMatchday.filter { it.goals > 0 }
+    val assistants = statsForMatchday.filter { it.assists > 0 }
 
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        // Cabecera con resultado tipo marcador
         item {
             Card(
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF00205B))
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF00205B)),
+                elevation = CardDefaults.cardElevation(6.dp)
             ) {
-                Column(Modifier.padding(20.dp)) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = "Jornada ${matchday.matchdayNumber}",
-                        fontSize = 20.sp,
+                        "Jornada ${matchday.matchdayNumber}",
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text("📅 ${matchday.date}", color = Color(0xFFE3F2FD))
-                    Text("🕒 ${matchday.time}", color = Color(0xFFE3F2FD))
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        "📅 ${matchday.date}    🕒 ${matchday.time}",
+                        color = Color(0xFFD1E8FF),
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(
+                        "${matchday.homeGoals} - ${matchday.awayGoals}",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        matchday.homeTeam,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                    Text(
+                        "vs",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color(0xFFD1E8FF)
+                    )
+                    Text(
+                        matchday.awayTeam,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
                 }
             }
         }
 
+        // Goleadores y asistentes en 2 columnas con chips
         item {
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
                 border = BorderStroke(1.dp, Color(0xFF00205B)),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text("⚽ Resultado", fontWeight = FontWeight.Bold, color = Color(0xFF00205B))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("📊 Goleadores y Asistentes", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF00205B))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("🏠 ${matchday.homeTeam}", fontSize = 16.sp)
-                    OutlinedTextField(
-                        value = homeGoals,
-                        onValueChange = { homeGoals = it },
-                        label = { Text("Goles Local") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text("🚩 ${matchday.awayTeam}", fontSize = 16.sp)
-                    OutlinedTextField(
-                        value = awayGoals,
-                        onValueChange = { awayGoals = it },
-                        label = { Text("Goles Visitante") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
-
-                    Text("📝 Crónica", fontWeight = FontWeight.Bold, color = Color(0xFF00205B))
-                    OutlinedTextField(
-                        value = summary,
-                        onValueChange = { summary = it },
-                        label = { Text("Escribe la crónica del partido...") },
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 5
-                    )
-
-                    Button(
-                        onClick = {
-                            val updated = matchday.copy(
-                                homeGoals = homeGoals.toIntOrNull() ?: 0,
-                                awayGoals = awayGoals.toIntOrNull() ?: 0,
-                                summary = summary
-                            )
-                            matchdayViewModel.updateMatchday(updated)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text("Guardar Cambios", color = Color.White)
+                        // Goleadores
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (scorers.isEmpty()) {
+                                Text("— Ninguno", color = Color.Gray)
+                            } else {
+                                scorers.sortedByDescending { it.goals }.forEach { stat ->
+                                    val player = allPlayers.find { it.number == stat.playerId }
+                                    AssistScorerChip(name = player?.firstName ?: "Jugador", value = stat.goals, icon = "⚽")
+                                }
+                            }
+                        }
+
+                        // Asistentes
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (assistants.isEmpty()) {
+                                Text("— Ninguno", color = Color.Gray)
+                            } else {
+                                assistants.sortedByDescending { it.assists }.forEach { stat ->
+                                    val player = allPlayers.find { it.number == stat.playerId }
+                                    AssistScorerChip(name = player?.firstName ?: "Jugador", value = stat.assists, icon = "🎯")
+                                }
+                            }
+                        }
                     }
                 }
             }
+        }
+
+        // Crónica
+        if (matchday.summary.isNotBlank()) {
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, Color(0xFF00205B)),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("📝 Crónica del Partido", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF00205B))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(matchday.summary, fontSize = 15.sp, color = Color(0xFF37474F))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun AssistScorerChip(name: String, value: Int, icon: String) {
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = Color(0xFF00205B).copy(alpha = 0.08f),
+        border = BorderStroke(1.dp, Color(0xFF00205B)),
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        ) {
+            Text(icon, fontSize = 14.sp)
+            Spacer(Modifier.width(6.dp))
+            Text(name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF00205B))
+            Spacer(Modifier.width(4.dp))
+            Text("x$value", fontSize = 14.sp, color = Color.DarkGray)
         }
     }
 }

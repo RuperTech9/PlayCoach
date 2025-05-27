@@ -122,10 +122,14 @@ fun Matches(
                 val reordered = matchdays.take(mid).zip(matchdays.drop(mid)).flatMap { listOf(it.first, it.second) }
 
                 items(reordered) { matchday ->
+                    val isHomeTeam = matchday.homeTeam == teamName
+                    val goalsFor = if (isHomeTeam) matchday.homeGoals else matchday.awayGoals
+                    val goalsAgainst = if (isHomeTeam) matchday.awayGoals else matchday.homeGoals
+
                     val cardColor = when {
-                        !matchday.played -> Color.White// Gris claro
-                        matchday.homeGoals > matchday.awayGoals -> Color(0xFFD0F8CE) // Verde claro
-                        matchday.homeGoals < matchday.awayGoals -> Color(0xFFFFCDD2) // Rojo claro
+                        !matchday.played -> Color.White
+                        goalsFor > goalsAgainst -> Color(0xFFD0F8CE) // Verde claro
+                        goalsFor < goalsAgainst -> Color(0xFFFFCDD2) // Rojo claro
                         else -> Color(0xFFFFF9C4) // Amarillo claro
                     }
 

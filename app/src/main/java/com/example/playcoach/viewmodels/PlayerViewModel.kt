@@ -79,29 +79,4 @@ class PlayerViewModel @Inject constructor(
             true
         }
     }
-
-    // Optional setters for form fields
-    fun updateNumber(value: Int) {
-        _number.value = value
-    }
-
-    fun updateFirstName(value: String) {
-        _firstName.value = value
-    }
-
-    fun updateLastName(value: String) {
-        _lastName.value = value
-    }
-
-    fun updateNickname(value: String) {
-        _nickname.value = value
-    }
-
-    fun updatePosition(value: String) {
-        _position.value = value
-    }
-
-    fun updateTeam(value: String) {
-        _team.value = value
-    }
 }

@@ -24,7 +24,7 @@ class CallUpViewModel @Inject constructor(
     val calledUpPlayers: StateFlow<List<Int>> = _calledUpPlayers
 
     private val _isCallUpLoading = MutableStateFlow(false)
-    val isCallUpLoading: StateFlow<Boolean> = _isCallUpLoading
+    private val isCallUpLoading: StateFlow<Boolean> = _isCallUpLoading
 
     data class PlayerDialog(val player: PlayerEntity, val matchdayId: Int)
     private val _playerDialog = MutableStateFlow<PlayerDialog?>(null)

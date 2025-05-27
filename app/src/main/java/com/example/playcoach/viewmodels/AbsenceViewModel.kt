@@ -37,23 +37,6 @@ class AbsenceViewModel @Inject constructor(
         }
     }
 
-    fun toggleAttendance(date: String, playerId: Int, present: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val current = repository.getAttendanceByDateAndPlayer(date, playerId).firstOrNull()
-            if (current == null) {
-                val new = AbsenceEntity(
-                    date = date,
-                    playerId = playerId,
-                    present = present
-                )
-                repository.insertAttendance(new)
-            } else {
-                val updated = current.copy(present = present)
-                repository.updateAttendance(updated)
-            }
-        }
-    }
-
     fun loadAbsenceCount(playerId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteOrphanedAttendance()
