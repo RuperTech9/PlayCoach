@@ -34,7 +34,6 @@ fun Calendar(
     val playerViewModel: PlayerViewModel = hiltViewModel()
     val callUpViewModel: CallUpViewModel = hiltViewModel()
 
-    // Carga de datos si cambia el equipo
     LaunchedEffect(teamName) {
         teamName?.let { team ->
             matchdayViewModel.updateSelectedTeam(team)
@@ -55,7 +54,6 @@ fun Calendar(
         }
     }
 
-    // Solo una vez: establecer índice visible inicial cuando haya datos
     val initialIndexComputed = remember { mutableStateOf(false) }
 
     LaunchedEffect(matchdays) {
@@ -75,7 +73,6 @@ fun Calendar(
         }
     }
 
-    // Evitar recargas innecesarias
     var lastLoadedTeam by remember { mutableStateOf<String?>(null) }
     val visibleTeam = sortedMatchdays.getOrNull(visibleMatchdayIndex)?.team
 

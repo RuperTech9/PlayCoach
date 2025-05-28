@@ -102,7 +102,6 @@ fun MatchDetailContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Cabecera con resultado tipo marcador
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -163,7 +162,6 @@ fun MatchDetailContent(
             }
         }
 
-        // Goleadores y asistentes en 2 columnas con chips
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -207,7 +205,6 @@ fun MatchDetailContent(
             }
         }
 
-        // Crónica
         if (matchday.summary.isNotBlank()) {
             item {
                 Card(
@@ -226,7 +223,6 @@ fun MatchDetailContent(
         }
     }
 }
-
 
 @Composable
 fun AssistScorerChip(name: String, value: Int, icon: String) {

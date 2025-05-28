@@ -35,7 +35,6 @@ class PlayerStatViewModel @Inject constructor(
                 playerList.map { player ->
                     val playerStats = statList.filter { it.playerId == player.number }
 
-                    // Only stats from played matchdays
                     val filteredStats = playerStats.filter { stat ->
                         matchdayList.find { it.id == stat.matchdayId }?.played == true
                     }

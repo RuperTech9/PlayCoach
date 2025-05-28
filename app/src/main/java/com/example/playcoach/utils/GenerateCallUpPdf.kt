@@ -22,13 +22,12 @@ fun generateCallUpPdf(
     context: Context,
     matchday: MatchdayEntity,
     calledUpPlayers: List<PlayerEntity>,
-    allPlayers: List<PlayerEntity> // ✅ nueva entrada
+    allPlayers: List<PlayerEntity>
 ): File {
     val pdfFile = File(context.cacheDir, "Convocados_Jornada_${matchday.matchdayNumber}.pdf")
     val document = PdfDocument(PdfWriter(pdfFile))
     val pdfDoc = Document(document)
 
-    // Logo
     val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logo_sln)
     val stream = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -49,38 +48,35 @@ fun generateCallUpPdf(
     pdfDoc.add(header)
     pdfDoc.add(LineSeparator(SolidLine(1f)))
 
-    // Info del partido
     val isHome = matchday.homeTeam.trim().equals(matchday.team, ignoreCase = true)
     val opponent = if (isHome) matchday.awayTeam else matchday.homeTeam
-    val condition = if (isHome) "🏟️ Local" else "🛫 Visitante"
+    val condition = if (isHome) "Local" else "Visitante"
 
-    pdfDoc.add(Paragraph("📅 Fecha: ${matchday.date}").setFontSize(12f))
-    pdfDoc.add(Paragraph("🕒 Hora: ${matchday.time}").setFontSize(12f))
-    pdfDoc.add(Paragraph("⚔️ Rival: $opponent").setFontSize(12f))
-    pdfDoc.add(Paragraph("📍 Condición: $condition").setFontSize(12f))
+    pdfDoc.add(Paragraph("Fecha: ${matchday.date}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Hora: ${matchday.time}").setFontSize(12f))
+    pdfDoc.add(Paragraph("Rival: $opponent").setFontSize(12f))
+    pdfDoc.add(Paragraph("Condición: $condition").setFontSize(12f))
 
     pdfDoc.add(LineSeparator(SolidLine(1f)))
     pdfDoc.add(Paragraph("\n"))
 
-    // Convocados
     pdfDoc.add(
-        Paragraph("🟢 Jugadores Convocados (${calledUpPlayers.size})")
+        Paragraph("Jugadores Convocados (${calledUpPlayers.size})")
             .setBold().setFontSize(15f).setUnderline()
     )
     calledUpPlayers.sortedBy { it.number }.forEach {
-        pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName}").setFontSize(12f))
+        pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName} ${it.lastName}").setFontSize(12f))
     }
 
-    // No convocados
     val notCalledUpPlayers = allPlayers.filter { p -> p !in calledUpPlayers }
     if (notCalledUpPlayers.isNotEmpty()) {
         pdfDoc.add(Paragraph("\n"))
         pdfDoc.add(
-            Paragraph("🔴 Jugadores NO Convocados (${notCalledUpPlayers.size})")
+            Paragraph("Jugadores NO Convocados (${notCalledUpPlayers.size})")
                 .setBold().setFontSize(15f).setUnderline()
         )
         notCalledUpPlayers.sortedBy { it.number }.forEach {
-            pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName}").setFontSize(12f))
+            pdfDoc.add(Paragraph("• ${it.number} - ${it.firstName} ${it.lastName}").setFontSize(12f))
         }
     }
 

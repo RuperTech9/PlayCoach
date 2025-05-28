@@ -16,7 +16,6 @@ class PlayerViewModel @Inject constructor(
     private val repository: PlayerRepository
 ) : ViewModel() {
 
-    // Form fields
     private val _number = MutableStateFlow(0)
     val number: StateFlow<Int> = _number.asStateFlow()
 

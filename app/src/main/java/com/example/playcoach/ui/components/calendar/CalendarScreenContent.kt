@@ -105,8 +105,8 @@ fun CalendarScreenContent(
                     columns = GridCells.Fixed(7),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 400.dp), // puedes ajustar este valor
-                    userScrollEnabled = false // para que no interfiera con el scroll vertical
+                        .heightIn(max = 400.dp),
+                    userScrollEnabled = false
                 ) {
                     items(listOf("L", "M", "X", "J", "V", "S", "D")) { letter ->
                         Box(

@@ -76,7 +76,6 @@ fun AddEventDialog(
                     fontSize = 16.sp
                 )
 
-                // Event type selector
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Button(
                         onClick = { expanded = true },

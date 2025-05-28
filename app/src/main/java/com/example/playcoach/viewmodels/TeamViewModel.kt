@@ -19,12 +19,10 @@ class TeamViewModel @Inject constructor(
     private val _teams = MutableStateFlow<List<TeamEntity>>(emptyList())
     val teams: StateFlow<List<TeamEntity>> = _teams.asStateFlow()
 
-    // Form field for new team name
     private val _newTeamName = MutableStateFlow("")
     val newTeamName: StateFlow<String> = _newTeamName.asStateFlow()
 
     init {
-        // Load teams from the database
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllTeams().collectLatest { list ->
                 _teams.value = list

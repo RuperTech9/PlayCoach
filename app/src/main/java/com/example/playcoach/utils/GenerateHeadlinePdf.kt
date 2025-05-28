@@ -67,7 +67,7 @@ fun generateHeadlinePdf(
     )
     starters.forEach { player ->
         pdfDoc.add(
-            Paragraph("• ${player.number} - ${player.firstName}")
+            Paragraph("• ${player.number} - ${player.firstName} ${player.lastName}")
                 .setFontSize(12f)
         )
     }
@@ -82,7 +82,7 @@ fun generateHeadlinePdf(
     )
     substitutes.forEach { player ->
         pdfDoc.add(
-            Paragraph("• ${player.number} - ${player.firstName}")
+            Paragraph("• ${player.firstName} ${player.lastName}")
                 .setFontSize(12f)
         )
     }

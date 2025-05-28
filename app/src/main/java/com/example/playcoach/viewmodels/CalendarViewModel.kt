@@ -15,7 +15,6 @@ class CalendarViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // Persisten tras rotación
     private val _currentMonth = savedStateHandle.getStateFlow("currentMonth", LocalDate.now().monthValue)
     val currentMonth: StateFlow<Int> = _currentMonth
 
@@ -25,7 +24,6 @@ class CalendarViewModel @Inject constructor(
     private val _visibleMatchdayIndex = savedStateHandle.getStateFlow("visibleMatchdayIndex", 0)
     val visibleMatchdayIndex: StateFlow<Int> = _visibleMatchdayIndex
 
-    // Temporales (no es crítico persistirlos)
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
     val selectedDate: StateFlow<LocalDate?> = _selectedDate
 

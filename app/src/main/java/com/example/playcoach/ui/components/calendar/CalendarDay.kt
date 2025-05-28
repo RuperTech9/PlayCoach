@@ -36,14 +36,14 @@ fun CalendarDay(
             val goalsAgainst = if (isHome) matchday.awayGoals else matchday.homeGoals
 
             when {
-                goalsFor > goalsAgainst -> Color(0xFFD0F8CE)   // Verde - victoria
-                goalsFor == goalsAgainst -> Color(0xFFFFF9C4)  // Amarillo - empate
-                else -> Color(0xFFFFCDD2)                      // Rojo - derrota
+                goalsFor > goalsAgainst -> Color(0xFFD0F8CE)
+                goalsFor == goalsAgainst -> Color(0xFFFFF9C4)
+                else -> Color(0xFFFFCDD2)
             }
         }
-        matchday != null -> Color.LightGray                   // Partido aún sin jugar
-        event != null -> Color(0xFFC8B9E3)                    // Evento normal
-        date == today -> Color(0xFFB3E5FC)                    // Día actual
+        matchday != null -> Color.LightGray
+        event != null -> Color(0xFFC8B9E3)
+        date == today -> Color(0xFFB3E5FC)
         else -> Color.White
     }
 

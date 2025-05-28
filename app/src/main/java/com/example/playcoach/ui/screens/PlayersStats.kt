@@ -154,9 +154,9 @@ fun PlayerStatsGrid(
 
                             Image(
                                 painter = painterResource(id = imageRes),
-                                contentDescription = "Foto",
+                                contentDescription = "Photo",
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .size(80.dp)
                                     .clip(CircleShape)
                                     .border(2.dp, Color(0xFF00205B), CircleShape)
                             )

@@ -262,7 +262,7 @@ fun PlayersGrid(
                                 painter = painterResource(id = TeamsData.getPlayerImageForTeamAndNumber(teamName, player.number)),
                                 contentDescription = "Foto",
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .size(80.dp)
                                     .clip(CircleShape)
                                     .border(2.dp, Color(0xFF00205B), CircleShape)
                             )
@@ -339,7 +339,7 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
                             painter = painterResource(id = imageId),
                             contentDescription = "Foto entrenador",
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(80.dp)
                                 .clip(CircleShape)
                                 .border(1.5.dp, Color(0xFF1A73E8), CircleShape)
                         )

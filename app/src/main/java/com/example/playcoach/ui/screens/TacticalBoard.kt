@@ -177,7 +177,6 @@ fun TacticalBoard(
                             if (player != null) {
                                 val isSelected = selectedPlayer == id
 
-                                // Calcular el offset proporcionalmente si las dimensiones han cambiado
                                 val offsetX = offset.x
                                 val offsetY = offset.y
 
@@ -310,9 +309,9 @@ fun TacticalBoard(
                             )
 
                             val subText = if (player.nickname.isNotBlank()) {
-                                "${player.number} - \"${player.nickname}\""
+                                "${player.number} - ${player.nickname}"
                             } else {
-                                "${player.number}  - \"${player.firstName}\""
+                                "${player.number}  - ${player.firstName}"
                             }
 
                             Text(

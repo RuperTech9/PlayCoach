@@ -37,7 +37,6 @@ fun MatchdayBottomCard(
 ) {
     val matchday = matchdays.getOrNull(visibleMatchdayIndex) ?: return
 
-    // Cargar convocatoria cuando cambia el partido
     LaunchedEffect(matchday.id) {
         callUpViewModel.loadCallUpForMatchday(matchday.id)
     }
@@ -90,7 +89,7 @@ fun MatchdayBottomCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Cabecera de jornada
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -119,14 +118,12 @@ fun MatchdayBottomCard(
                         }
                     }
 
-                    // Fecha y hora
                     Text(
                         text = "📅 ${matchday.date} — ${matchday.time}",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
 
-                    // Equipos
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = matchday.homeTeam,
@@ -143,16 +140,15 @@ fun MatchdayBottomCard(
                         )
                     }
 
-                    // Resultado si ya se jugó
                     if (isPlayed && (matchday.homeGoals >= 0 && matchday.awayGoals >= 0)) {
                         val isHome = matchday.homeTeam == matchday.team
                         val goalsFor = if (isHome) matchday.homeGoals else matchday.awayGoals
                         val goalsAgainst = if (isHome) matchday.awayGoals else matchday.homeGoals
 
                         val resultColor = when {
-                            goalsFor > goalsAgainst -> Color(0xFF388E3C) // Verde
-                            goalsFor == goalsAgainst -> Color(0xFFFFC107) // Amarillo
-                            else -> Color(0xFFD32F2F) // Rojo
+                            goalsFor > goalsAgainst -> Color(0xFF388E3C)
+                            goalsFor == goalsAgainst -> Color(0xFFFFC107)
+                            else -> Color(0xFFD32F2F)
                         }
 
                         Text(

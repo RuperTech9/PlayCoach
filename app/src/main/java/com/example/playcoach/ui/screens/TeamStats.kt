@@ -170,7 +170,7 @@ fun TeamStatsGrid(data: TeamStatsData) {
                 ChartSection(data)
             }
         } else {
-            // 💻 Modo fila: tarjetas izquierda, gráfica derecha
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -233,7 +233,7 @@ fun ChartSection(data: TeamStatsData) {
 @Composable
 fun StatsCard(title: String, value: String, color: Color, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier // ✅ Ahora sí se usa correctamente
+        modifier = modifier
             .padding(horizontal = 4.dp)
             .height(100.dp),
         shape = RoundedCornerShape(16.dp),
@@ -312,7 +312,7 @@ fun TeamStatsPreview() {
                     losses = 1,
                     goalsFor = 12,
                     goalsAgainst = 7,
-                    matchdays = emptyList() // No jornadas en el preview
+                    matchdays = emptyList()
                 )
             )
         }

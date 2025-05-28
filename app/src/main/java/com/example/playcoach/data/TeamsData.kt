@@ -100,8 +100,8 @@ object TeamsData {
         41 to R.drawable.infantil_a_valen
     )
     private val coachImagesInfantilA = mapOf(
-        "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_ibra,
-        "MARIO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_valen
+        "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_primer_entrenador,
+        "MARIO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_segundo_entrenador
     )
 
     fun getCoachImageForTeamAndName(team: String, fullName: String): Int {
@@ -110,8 +110,6 @@ object TeamsData {
             else -> R.drawable.ic_jugador
         }
     }
-
-
 
     private val imagesInfantilB = mapOf<Int, Int>()
 

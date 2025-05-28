@@ -33,7 +33,7 @@ fun BaseScreen(
     content: @Composable (Modifier) -> Unit
 ) {
     Scaffold(
-        containerColor = Color(0xFFCCE5FF), // Light blue background
+        containerColor = Color(0xFFCCE5FF),
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
