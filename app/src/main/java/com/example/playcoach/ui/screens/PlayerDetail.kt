@@ -195,6 +195,10 @@ fun PlayerCard(state: PlayerDetailState) {
 
 @Composable
 fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
+    fun percentage(part: Int, total: Int): String {
+        return if (total > 0) "${((part * 100f / total)).toInt()}%" else "0%"
+    }
+
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -225,15 +229,16 @@ fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
                 Text(statText("Asist", state.totalAssists), fontSize = 14.sp)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(statText("Min", state.totalMinutes), fontSize = 14.sp)
+                Text(statText("Min", "${state.totalMinutes} (${percentage(state.totalMinutes, state.totalPlayedMatchdays * 90)})"), fontSize = 14.sp)
                 Text(statText("Amar", state.totalYellows), fontSize = 14.sp)
                 Text(statText("Rojas", state.totalReds), fontSize = 14.sp)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(statText("Part", state.matchesPlayed), fontSize = 14.sp)
-                Text(statText("Tit", state.starts), fontSize = 14.sp)
-                Text(statText("Supl", state.substitutes), fontSize = 14.sp)
+                Text(statText("Part", "${state.matchesPlayed} (${percentage(state.matchesPlayed, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
+                Text(statText("Tit", "${state.starts} (${percentage(state.starts, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
+                Text(statText("Supl", "${state.substitutes} (${percentage(state.substitutes, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
             }
+
             Row {
                 Text(
                     text = "Faltas Asistencia: $absences",

@@ -25,6 +25,7 @@ data class PlayerDetailState(
     val matchesPlayed: Int = 0,
     val starts: Int = 0,
     val substitutes: Int = 0,
+    val totalPlayedMatchdays: Int = 0,
     val matchdays: List<MatchdayPlayerDetail> = emptyList()
 )
 
@@ -52,6 +53,8 @@ class PlayerDetailViewModel @Inject constructor(
     private val _playerDetail = MutableStateFlow<PlayerDetailState?>(null)
     val playerDetail: StateFlow<PlayerDetailState?> = _playerDetail.asStateFlow()
 
+    val totalPlayedMatchdays = matchdayList.count { it.played }
+
     fun loadPlayerAndStats(playerId: Int) {
         viewModelScope.launch {
             combine(
@@ -62,6 +65,11 @@ class PlayerDetailViewModel @Inject constructor(
                 maybePlayer?.let { player ->
 
                     val matchdayMap = matchdayList.associateBy { it.id }
+
+                    // Only stats from played matchdays
+                    val filteredStats = statList.filter { stat ->
+                        matchdayMap[stat.matchdayId]?.played == true
+                    }
 
                     val matchdayDetails = statList.mapNotNull { stat ->
                         matchdayMap[stat.matchdayId]?.let { md ->
@@ -95,7 +103,8 @@ class PlayerDetailViewModel @Inject constructor(
                         matchesPlayed = statList.map { it.matchdayId }.distinct().count(),
                         starts = statList.count { it.wasStarter },
                         substitutes = statList.count { !it.wasStarter },
-                        matchdays = matchdayDetails
+                        matchdays = matchdayDetails,
+                        totalPlayedMatchdays = totalPlayedMatchdays
                     )
                 }
             }
@@ -106,4 +115,3 @@ class PlayerDetailViewModel @Inject constructor(
         }
     }
 }
-
