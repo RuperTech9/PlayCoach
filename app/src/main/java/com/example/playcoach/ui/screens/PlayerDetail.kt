@@ -14,7 +14,6 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -199,57 +198,66 @@ fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
         return if (total > 0) "${((part * 100f / total)).toInt()}%" else "0%"
     }
 
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Text(
-                text = "📊 Estadísticas Generales",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF00205B)
-            )
+        Text(
+            text = "📊 Estadísticas Generales",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF00205B)
+        )
 
-            fun statText(label: String, value: Any): AnnotatedString = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF00205B))) {
-                    append("$label: ")
-                }
-                append(value.toString())
-            }
-
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(statText("Goles", state.totalGoals), fontSize = 14.sp)
-                Text(statText("Asist", state.totalAssists), fontSize = 14.sp)
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(statText("Min", "${state.totalMinutes} (${percentage(state.totalMinutes, state.totalPlayedMatchdays * 90)})"), fontSize = 14.sp)
-                Text(statText("Amar", state.totalYellows), fontSize = 14.sp)
-                Text(statText("Rojas", state.totalReds), fontSize = 14.sp)
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(statText("Part", "${state.matchesPlayed} (${percentage(state.matchesPlayed, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
-                Text(statText("Tit", "${state.starts} (${percentage(state.starts, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
-                Text(statText("Supl", "${state.substitutes} (${percentage(state.substitutes, state.totalPlayedMatchdays)})"), fontSize = 14.sp)
-            }
-
-            Row {
+        fun statBox(label: String, value: String): @Composable () -> Unit = {
+            Column(
+                modifier = Modifier.width(80.dp), // Fijo para mantener alineación
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text(
-                    text = "Faltas Asistencia: $absences",
+                    text = label,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Red
+                    color = Color(0xFF00205B)
                 )
+                Text(text = value, fontSize = 14.sp)
             }
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            statBox("Goles", "${state.totalGoals}")()
+            statBox("Asist", "${state.totalAssists}")()
+            statBox("Min", "${state.totalMinutes} (${percentage(state.totalMinutes, state.totalPlayedMatchdays * 70)})")()
+            statBox("Amar", "${state.totalYellows}")()
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            statBox("Rojas", "${state.totalReds}")()
+            statBox("Part", "${state.matchesPlayed} (${percentage(state.matchesPlayed, state.totalPlayedMatchdays)})")()
+            statBox("Tit", "${state.starts} (${percentage(state.starts, state.totalPlayedMatchdays)})")()
+            statBox("Supl", "${state.substitutes} (${percentage(state.substitutes, state.totalPlayedMatchdays)})")()
+        }
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+            Text(
+                text = "Faltas Asistencia: $absences",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Red
+            )
+        }
     }
+
 }
+
 
 @Composable
 fun MatchdayFilterCard(selectedFilter: MatchdayFilter, onFilterChange: (MatchdayFilter) -> Unit) {

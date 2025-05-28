@@ -53,8 +53,6 @@ class PlayerDetailViewModel @Inject constructor(
     private val _playerDetail = MutableStateFlow<PlayerDetailState?>(null)
     val playerDetail: StateFlow<PlayerDetailState?> = _playerDetail.asStateFlow()
 
-    val totalPlayedMatchdays = matchdayList.count { it.played }
-
     fun loadPlayerAndStats(playerId: Int) {
         viewModelScope.launch {
             combine(
@@ -66,12 +64,13 @@ class PlayerDetailViewModel @Inject constructor(
 
                     val matchdayMap = matchdayList.associateBy { it.id }
 
-                    // Only stats from played matchdays
                     val filteredStats = statList.filter { stat ->
                         matchdayMap[stat.matchdayId]?.played == true
                     }
 
-                    val matchdayDetails = statList.mapNotNull { stat ->
+                    val totalPlayedMatchdays = matchdayList.count { it.played }
+
+                    val matchdayDetails = filteredStats.mapNotNull { stat ->
                         matchdayMap[stat.matchdayId]?.let { md ->
                             MatchdayPlayerDetail(
                                 matchdayNumber = md.matchdayNumber,
@@ -95,14 +94,14 @@ class PlayerDetailViewModel @Inject constructor(
                         name = player.firstName,
                         lastname = player.lastName,
                         team = player.team,
-                        totalGoals = statList.sumOf { it.goals },
-                        totalAssists = statList.sumOf { it.assists },
-                        totalYellows = statList.sumOf { it.yellowCards },
-                        totalReds = statList.sumOf { it.redCards },
-                        totalMinutes = statList.sumOf { it.minutesPlayed },
-                        matchesPlayed = statList.map { it.matchdayId }.distinct().count(),
-                        starts = statList.count { it.wasStarter },
-                        substitutes = statList.count { !it.wasStarter },
+                        totalGoals = filteredStats.sumOf { it.goals },
+                        totalAssists = filteredStats.sumOf { it.assists },
+                        totalYellows = filteredStats.sumOf { it.yellowCards },
+                        totalReds = filteredStats.sumOf { it.redCards },
+                        totalMinutes = filteredStats.sumOf { it.minutesPlayed },
+                        matchesPlayed = filteredStats.map { it.matchdayId }.distinct().count(),
+                        starts = filteredStats.count { it.wasStarter },
+                        substitutes = filteredStats.count { !it.wasStarter },
                         matchdays = matchdayDetails,
                         totalPlayedMatchdays = totalPlayedMatchdays
                     )
@@ -114,4 +113,5 @@ class PlayerDetailViewModel @Inject constructor(
                 }
         }
     }
+
 }
