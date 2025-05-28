@@ -47,13 +47,4 @@ class TeamViewModel @Inject constructor(
             }
         }
     }
-
-    // Optional: Enable if you want to allow team deletion
-    /*
-    fun deleteTeam(team: TeamEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteTeam(team)
-        }
-    }
-    */
 }

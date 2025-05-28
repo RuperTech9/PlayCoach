@@ -116,7 +116,7 @@ fun MatchdayDetailsDialog(
                                 calledUp.contains(player.number)
                             }
 
-                            val pdf = generateCallUpPdf(context, matchday, calledUpPlayers)
+                            val pdf = generateCallUpPdf(context, matchday, calledUpPlayers, players)
                             val uri = FileProvider.getUriForFile(
                                 context,
                                 "${context.packageName}.provider",
