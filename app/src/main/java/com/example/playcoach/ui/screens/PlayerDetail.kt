@@ -242,22 +242,22 @@ fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             statBox("Goles", "${state.totalGoals}")()
-            statBox("Asist", "${state.totalAssists}")()
-            statBox("Min", "${state.totalMinutes} (${percentage(state.totalMinutes, state.totalPlayedMatchdays * 70)})")()
-            statBox("Amar", "${state.totalYellows}")()
+            statBox("Part", "${state.matchesPlayed} (${percentage(state.matchesPlayed, state.totalPlayedMatchdays)})")()
+            statBox("Tit", "${state.starts} (${percentage(state.starts, state.totalPlayedMatchdays)})")()
+            statBox("Rojas", "${state.totalReds}")()
         }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            statBox("Rojas", "${state.totalReds}")()
-            statBox("Part", "${state.matchesPlayed} (${percentage(state.matchesPlayed, state.totalPlayedMatchdays)})")()
-            statBox("Tit", "${state.starts} (${percentage(state.starts, state.totalPlayedMatchdays)})")()
+            statBox("Asist", "${state.totalAssists}")()
+            statBox("Min", "${state.totalMinutes} (${percentage(state.totalMinutes, state.totalPlayedMatchdays * 70)})")()
             statBox("Supl", "${state.substitutes} (${percentage(state.substitutes, state.totalPlayedMatchdays)})")()
+            statBox("Amar", "${state.totalYellows}")()
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
@@ -271,7 +271,6 @@ fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
     }
 
 }
-
 
 @Composable
 fun MatchdayFilterCard(selectedFilter: MatchdayFilter, onFilterChange: (MatchdayFilter) -> Unit) {
