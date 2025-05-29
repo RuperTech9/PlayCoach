@@ -49,7 +49,7 @@ fun TeamStats(
     val data = teamStatsViewModel.teamStats.collectAsState().value
 
     BaseScreen(
-        title = "Estadísticas Equipo",
+        title = "Est. Equipo",
         teamName = teamName,
         onNavigateBack = onNavigateBack,
         onNavigateToNotifications = onNavigateToNotifications,
@@ -316,7 +316,7 @@ fun TopPlayersSection(teamName: String?) {
             StatsList("🅰️ Top Asistentes", topAssists) { "${it.assists}" }
         }
         Column(modifier = Modifier.weight(1f)) {
-            StatsList("🕒 Top Minutos Jugados", topMinutes) { "${it.minutesPlayed} min" }
+            StatsList("🕒 Top Minutos", topMinutes) { "${it.minutesPlayed} min" }
         }
     }
 }

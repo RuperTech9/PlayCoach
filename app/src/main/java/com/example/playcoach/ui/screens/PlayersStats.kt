@@ -81,7 +81,7 @@ fun PlayersStats(
     }
 
     BaseScreen(
-        title = "Estadísticas Jugadores",
+        title = "Est. Jugadores",
         teamName = teamName,
         onNavigateBack = onNavigateBack,
         onNavigateToNotifications = onNavigateToNotifications,
