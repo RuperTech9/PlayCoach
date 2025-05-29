@@ -63,7 +63,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
-
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
@@ -72,6 +71,9 @@ dependencies {
 
     // PDF
     implementation(libs.itext7.core)
+
+    //Icons
+    implementation (libs.androidx.material.icons.extended)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

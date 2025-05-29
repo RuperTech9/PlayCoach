@@ -16,6 +16,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,16 @@ fun PlayerStatsDialog(
     var minutesText by remember { mutableStateOf("") }
     var wasStarter by remember { mutableStateOf(false) }
 
+    val (goalsError, assistsError, yellowError, redError, minutesError) = remember {
+        listOf(
+            mutableStateOf(false),
+            mutableStateOf(false),
+            mutableStateOf(false),
+            mutableStateOf(false),
+            mutableStateOf(false)
+        )
+    }
+
     val currentPlayer = rememberUpdatedState(player)
     val currentMatchdayId = rememberUpdatedState(matchdayId)
 
@@ -63,6 +74,9 @@ fun PlayerStatsDialog(
                 wasStarter = it.wasStarter
             }
     }
+
+    fun validateInt(input: String): Boolean = input.toIntOrNull() != null
+    fun validateMinutes(input: String): Boolean = input.toIntOrNull()?.let { it in 0..70 } ?: false
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -83,40 +97,26 @@ fun PlayerStatsDialog(
                     color = Color(0xFF00205B)
                 )
 
-                OutlinedTextField(
-                    value = goalsText,
-                    onValueChange = { goalsText = it },
-                    label = { Text("Goles") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                @Composable
+                fun OutlinedValidatedField(value: String, onChange: (String) -> Unit, label: String, isError: MutableState<Boolean>, validator: (String) -> Boolean, errorMsg: String) {
+                    OutlinedTextField(
+                        value = value,
+                        onValueChange = {
+                            onChange(it)
+                            isError.value = !validator(it)
+                        },
+                        label = { Text(label) },
+                        isError = isError.value,
+                        supportingText = { if (isError.value) Text(errorMsg, color = Color.Red) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                OutlinedTextField(
-                    value = assistsText,
-                    onValueChange = { assistsText = it },
-                    label = { Text("Asistencias") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = yellowCardsText,
-                    onValueChange = { yellowCardsText = it },
-                    label = { Text("Tarjetas Amarillas") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = redCardsText,
-                    onValueChange = { redCardsText = it },
-                    label = { Text("Tarjetas Rojas") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = minutesText,
-                    onValueChange = { minutesText = it },
-                    label = { Text("Minutos Jugados") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                OutlinedValidatedField(goalsText, { goalsText = it }, "Goles", goalsError, ::validateInt, "Solo números enteros")
+                OutlinedValidatedField(assistsText, { assistsText = it }, "Asistencias", assistsError, ::validateInt, "Solo números enteros")
+                OutlinedValidatedField(yellowCardsText, { yellowCardsText = it }, "Tarjetas Amarillas", yellowError, ::validateInt, "Solo números enteros")
+                OutlinedValidatedField(redCardsText, { redCardsText = it }, "Tarjetas Rojas", redError, ::validateInt, "Solo números enteros")
+                OutlinedValidatedField(minutesText, { minutesText = it }, "Minutos Jugados", minutesError, ::validateMinutes, "Debe estar entre 0 y 70")
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("¿Titular?", modifier = Modifier.weight(1f))
@@ -130,16 +130,18 @@ fun PlayerStatsDialog(
                     Button(
                         onClick = {
                             onSave(
-                                goalsText.toIntOrNull() ?: 0,
-                                assistsText.toIntOrNull() ?: 0,
-                                yellowCardsText.toIntOrNull() ?: 0,
-                                redCardsText.toIntOrNull() ?: 0,
-                                minutesText.toIntOrNull() ?: 0,
+                                goalsText.toInt(),
+                                assistsText.toInt(),
+                                yellowCardsText.toInt(),
+                                redCardsText.toInt(),
+                                minutesText.toInt(),
                                 wasStarter
                             )
                         },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B)),
+                        enabled = listOf(goalsError, assistsError, yellowError, redError, minutesError).all { !it.value } &&
+                                listOf(goalsText, assistsText, yellowCardsText, redCardsText, minutesText).all { it.isNotBlank() }
                     ) {
                         Text("Guardar", color = Color.White)
                     }

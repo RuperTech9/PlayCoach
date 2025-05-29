@@ -1,10 +1,17 @@
 package com.example.playcoach.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.playcoach.ui.components.BaseScreen
 
@@ -42,7 +49,39 @@ fun Messages(
                 .then(modifier),
             contentAlignment = Alignment.Center
         ) {
-            Text("Vista de Mensajes")
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Chat,
+                    contentDescription = "Mensajes",
+                    tint = Color(0xFF90CAF9),
+                    modifier = Modifier.size(72.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Todavía no hay mensajes",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF00205B)
+                )
+                Text(
+                    text = "Aquí podrás ver tus conversaciones con el equipo",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
+
+            FloatingActionButton(
+                onClick = { /* TODO: abrir diálogo para nuevo mensaje */ },
+                containerColor = Color(0xFF00205B),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Nuevo mensaje", tint = Color.White)
+            }
         }
     }
 }
@@ -60,7 +99,7 @@ fun MessagesScreenPreview() {
         onNavigateToStats = {},
         onNavigateToFormations = {},
         onNavigateToOthers = {},
-        onNavigateToSelectTeam = { },
-        teamName = ""
+        onNavigateToSelectTeam = {},
+        teamName = "Infantil A"
     )
 }

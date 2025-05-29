@@ -322,7 +322,7 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
             ) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F0FE)),
-                    border = BorderStroke(1.dp, Color(0xFF1A73E8)),
+                    border = BorderStroke(1.dp, Color(0xFF00205B)),
                     elevation = CardDefaults.cardElevation(4.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -337,11 +337,11 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
 
                         Image(
                             painter = painterResource(id = imageId),
-                            contentDescription = "Foto entrenador",
+                            contentDescription = "Photo coach",
                             modifier = Modifier
                                 .size(80.dp)
                                 .clip(CircleShape)
-                                .border(1.5.dp, Color(0xFF1A73E8), CircleShape)
+                                .border(1.5.dp, Color(0xFF00205B), CircleShape)
                         )
 
                         Spacer(Modifier.width(16.dp))
@@ -359,7 +359,7 @@ fun CoachesList(coaches: List<CoachEntity>, onDeleteClick: (CoachEntity) -> Unit
                         IconButton(onClick = { onDeleteClick(coach) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Eliminar",
+                                contentDescription = "Delete",
                                 tint = Color.Red
                             )
                         }

@@ -489,6 +489,11 @@ fun EditMatchdayDialog(
     var awayGoals by remember { mutableStateOf(matchday.awayGoals.toString()) }
     var summary by remember { mutableStateOf(matchday.summary) }
 
+    val homeGoalsError = remember { mutableStateOf(false) }
+    val awayGoalsError = remember { mutableStateOf(false) }
+
+    fun isValidInt(value: String): Boolean = value.toIntOrNull() != null
+
     Column {
         SnackbarHost(hostState = snackbarHostState)
         Card(
@@ -499,10 +504,49 @@ fun EditMatchdayDialog(
         ) {
             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("✏️ Editar Jornada", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00205B))
-                OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("🕒 Hora") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = homeGoals, onValueChange = { homeGoals = it }, label = { Text("⚽ Goles Local") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = awayGoals, onValueChange = { awayGoals = it }, label = { Text("⚽ Goles Visitante") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = summary, onValueChange = { summary = it }, label = { Text("📝 Crónica del Partido") }, modifier = Modifier.fillMaxWidth(), maxLines = 6)
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("🕒 Hora") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = homeGoals,
+                    onValueChange = {
+                        homeGoals = it
+                        homeGoalsError.value = !isValidInt(it)
+                    },
+                    label = { Text("⚽ Goles Local") },
+                    isError = homeGoalsError.value,
+                    supportingText = {
+                        if (homeGoalsError.value) Text("Solo números enteros", color = Color.Red)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = awayGoals,
+                    onValueChange = {
+                        awayGoals = it
+                        awayGoalsError.value = !isValidInt(it)
+                    },
+                    label = { Text("⚽ Goles Visitante") },
+                    isError = awayGoalsError.value,
+                    supportingText = {
+                        if (awayGoalsError.value) Text("Solo números enteros", color = Color.Red)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = summary,
+                    onValueChange = { summary = it },
+                    label = { Text("📝 Crónica del Partido") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 6
+                )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("¿Partido jugado?", modifier = Modifier.weight(1f))
@@ -513,8 +557,8 @@ fun EditMatchdayDialog(
                     onClick = {
                         val updated = matchday.copy(
                             time = description,
-                            homeGoals = homeGoals.toIntOrNull() ?: 0,
-                            awayGoals = awayGoals.toIntOrNull() ?: 0,
+                            homeGoals = homeGoals.toInt(),
+                            awayGoals = awayGoals.toInt(),
                             summary = summary,
                             played = played
                         )
@@ -528,6 +572,7 @@ fun EditMatchdayDialog(
                             snackbarHostState.showSnackbar("✅ Jornada guardada correctamente")
                         }
                     },
+                    enabled = isValidInt(homeGoals) && isValidInt(awayGoals),
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00205B))
                 ) {
