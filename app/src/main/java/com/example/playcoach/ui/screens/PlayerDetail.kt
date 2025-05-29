@@ -269,7 +269,6 @@ fun StatSummaryCard(state: PlayerDetailState, absences: Int) {
             )
         }
     }
-
 }
 
 @Composable
