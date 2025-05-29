@@ -38,6 +38,14 @@ class TeamStatsViewModel @Inject constructor(
         _selectedTeam.value = name
     }
 
+    suspend fun getMatchdayId(team: String, matchdayNumber: Int): Int? {
+        return matchdayRepository.getAllMatchdays().first().find {
+            it.matchdayNumber == matchdayNumber &&
+                    (it.homeTeam == team || it.awayTeam == team)
+        }?.id
+    }
+
+
     private val _refresh = MutableStateFlow(false)
     fun forceRefresh() {
         _refresh.value = !_refresh.value

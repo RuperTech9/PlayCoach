@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.R
 import com.example.playcoach.data.TeamsData
 import com.example.playcoach.viewmodels.*
+import kotlinx.coroutines.launch
 
 enum class MatchdayFilter(val label: String) {
     ALL("Todas"),
@@ -33,10 +34,12 @@ enum class MatchdayFilter(val label: String) {
 @Composable
 fun PlayerDetail(
     playerId: Int,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToMatchDetail: (Int) -> Unit
 ) {
     val playerDetailViewModel: PlayerDetailViewModel = hiltViewModel()
     val absenceViewModel: AbsenceViewModel = hiltViewModel()
+    val teamStatsViewModel: TeamStatsViewModel = hiltViewModel()
 
     LaunchedEffect(playerId) {
         if (playerId != -1) {
@@ -98,6 +101,7 @@ fun PlayerDetail(
                     }
                 }
             }
+            val coroutineScope = rememberCoroutineScope()
 
             LazyColumn(
                 modifier = Modifier
@@ -130,9 +134,19 @@ fun PlayerDetail(
                         selectedFilter = it
                     }
                 }
+
+
                 items(filteredMatchdays) { matchday ->
-                    MatchdayDetailCard(matchday)
+                    MatchdayDetailCard(matchday) {
+                        coroutineScope.launch {
+                            val id = teamStatsViewModel.getMatchdayId(state.team, matchday.matchdayNumber)
+                            id?.let { onNavigateToMatchDetail(it) }
+                        }
+                    }
                 }
+
+
+
             }
         }
     }
@@ -317,8 +331,11 @@ fun MatchdayFilterCard(selectedFilter: MatchdayFilter, onFilterChange: (Matchday
 }
 
 @Composable
-private fun MatchdayDetailCard(matchday: MatchdayPlayerDetail) {
+private fun MatchdayDetailCard(matchday: MatchdayPlayerDetail, onClick: () -> Unit) {
     Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, Color(0xFF00205B)),
         elevation = CardDefaults.cardElevation(2.dp),

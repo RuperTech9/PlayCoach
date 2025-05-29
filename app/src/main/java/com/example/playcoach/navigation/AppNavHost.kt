@@ -187,7 +187,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
             PlayerDetail(
                 playerId = playerId,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToMatchDetail = { matchdayId ->
+                    navController.navigate("match_details/$matchdayId")
+                }
             )
         }
 

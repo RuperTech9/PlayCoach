@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.playcoach.ui.components.BaseScreen
+import com.example.playcoach.viewmodels.PlayerStatViewModel
 import com.example.playcoach.viewmodels.TeamStatsData
 import com.example.playcoach.viewmodels.TeamStatsViewModel
 
@@ -88,6 +89,10 @@ fun TeamStats(
                 data?.let { stats ->
                     TeamStatsGrid(stats)
                 } ?: Text(text = "Cargando o equipo no seleccionado")
+            }
+
+            item {
+                TopPlayersSection(teamName = teamName)
             }
 
             item {
@@ -161,7 +166,6 @@ fun TeamStatsGrid(data: TeamStatsData) {
         val isCompact = maxWidth < 600.dp
 
         if (isCompact) {
-            // 📱 Modo columna: tarjetas arriba, gráfica abajo
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -262,7 +266,6 @@ fun StatsCard(title: String, value: String, color: Color, modifier: Modifier = M
     }
 }
 
-
 @Composable
 fun WinDrawLossPieChart(wins: Int, draws: Int, losses: Int) {
     val total = wins + draws + losses
@@ -286,6 +289,59 @@ fun WinDrawLossPieChart(wins: Int, draws: Int, losses: Int) {
         }
     }
 }
+
+@Composable
+fun TopPlayersSection(teamName: String?) {
+    val playerStatViewModel: PlayerStatViewModel = hiltViewModel()
+    val stats by playerStatViewModel.playersStats.collectAsState()
+
+    LaunchedEffect(teamName) {
+        teamName?.let { playerStatViewModel.loadStatsForTeam(it) }
+    }
+
+    val topScorers = stats.sortedByDescending { it.goals }.take(5)
+    val topAssists = stats.sortedByDescending { it.assists }.take(5)
+    val topMinutes = stats.sortedByDescending { it.minutesPlayed }.take(5)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            StatsList("⚽ Top Goleadores", topScorers) { "${it.goals}" }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            StatsList("🅰️ Top Asistentes", topAssists) { "${it.assists}" }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            StatsList("🕒 Top Minutos Jugados", topMinutes) { "${it.minutesPlayed} min" }
+        }
+    }
+}
+
+
+@Composable
+fun StatsList(title: String, players: List<PlayerStats>, statText: (PlayerStats) -> String) {
+    Column {
+        Text(
+            text = title,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF00205B),
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        players.forEach {
+            Text(
+                text = "• ${it.name}: ${statText(it)}",
+                fontSize = 15.sp,
+                color = Color.DarkGray
+            )
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
