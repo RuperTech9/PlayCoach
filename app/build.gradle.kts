@@ -75,6 +75,10 @@ dependencies {
     //Icons
     implementation (libs.androidx.material.icons.extended)
 
+    // For Unit Test with courutines and mocks
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
