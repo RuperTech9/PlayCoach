@@ -30,14 +30,17 @@ Una aplicación Android desarrollada en Kotlin con Jetpack Compose, orientada a 
 
 ## 🎥 Capturas de pantalla
 
-| Portada                          | Selección de equipo                     | Calendario                            |
-|----------------------------------|-----------------------------------------|---------------------------------------|
-| ![portada](images/01_splash.png) | ![seleccion](images/02_select_team.png) | ![calendario](images/03_calendar.png) |
+| Portada                                  | Selección de equipo                             | Calendario                            |
+|------------------------------------------|-------------------------------------------------|---------------------------------------|
+| ![portada](images/01_splash.png)         | ![seleccion](images/02_select_team.png)         | ![calendario](images/03_calendar.png) |
 
-| Estadísticas                             | Jornadas                            | Pizarra táctica                        |
-|------------------------------------------|-------------------------------------|----------------------------------------|
-| ![estadisticas](images/09_teamStats.png) | ![partidos](images/08_matchday.png) | ![formacion](images/12_formations.png) |
+| Estadísticas Equipo                      | Estadísticas Jugador                            | Jornadas                              |
+|------------------------------------------|-------------------------------------------------|---------------------------------------|
+| ![estadisticas](images/09_teamStats.png) | ![detalles jugador](images/11_playerDetail.png) | ![partidos](images/08_matchday.png)   |
 
+| Eventos                               | Asistencia                              | Pizarra táctica                        |
+|---------------------------------------|-----------------------------------------|----------------------------------------|
+| ![portada](images/04_eventDetail.png) | ![asistencia](images/05_absence_ok.png) | ![formacion](images/12_formations.png) |
 ---
 
 ## 🏁 Cómo empezar
