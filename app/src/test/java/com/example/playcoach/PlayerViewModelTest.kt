@@ -24,7 +24,7 @@ class PlayerViewModelTest {
     }
 
     @Test
-    fun `añadir jugador con dorsal duplicado devuelve false y no inserta`() = runTest {
+    fun addPlayerWithDuplicateNumberReturnsFalseAndDoesNotInsert() = runTest {
         val existing = PlayerEntity(1, 10, "Juan", "Pérez", "JP", "Jugador", "Infantil A")
         coEvery { repository.getPlayersByTeam("Infantil A") } returns flowOf(listOf(existing))
 
@@ -37,7 +37,7 @@ class PlayerViewModelTest {
     }
 
     @Test
-    fun `añadir jugador con dorsal único devuelve true e inserta`() = runTest {
+    fun addPlayerWithUniqueNumberReturnsTrueAndInserts() = runTest {
         coEvery { repository.getPlayersByTeam("Infantil A") } returns flowOf(emptyList())
 
         val result = viewModel.addPlayerIfPossible(
@@ -49,7 +49,7 @@ class PlayerViewModelTest {
     }
 
     @Test
-    fun `eliminar jugador llama al repositorio`() = runTest {
+    fun deletePlayerCallsRepository() = runTest {
         val player = PlayerEntity(1, 15, "Luis", "Martínez", "LM", "Portero", "Infantil B")
 
         viewModel.deletePlayer(player)
