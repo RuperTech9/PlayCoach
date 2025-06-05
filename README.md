@@ -1,49 +1,49 @@
 # PlayCoach ⚽📱
 
-Una aplicación Android desarrollada en Kotlin con Jetpack Compose, orientada a la gestión deportiva de equipos de fútbol base. Diseñada con una arquitectura MVVM moderna y persistencia con Room.
+An Android application developed in Kotlin with Jetpack Compose, focused on youth football team management. Designed with a modern MVVM architecture and persistence using Room.
 
 ---
 
-## 🚀 Tecnologías y Arquitectura
+## 🚀 Technologies & Architecture
 
 - **Kotlin + Jetpack Compose**
-- **Arquitectura en capas MVVM (Room → Repository → ViewModel → UI Compose)**
-- **StateFlow y viewModelScope para estado reactivo**
-- **Navegación con Navigation Compose + rutas parametrizadas**
-- **Inyección de dependencias con Hilt**
+- **Layered MVVM architecture (Room → Repository → ViewModel → UI Compose)**
+- **StateFlow and viewModelScope for reactive state management**
+- **Navigation with Navigation Compose + parameterized routes**
+- **Dependency injection with Hilt**
 - **Material Design 3**
-- **Persistencia con Room y DAOs personalizados**
+- **Persistence with Room and custom DAOs**
 
 ---
 
-## 🧠 Funcionalidades principales
+## 🧠 Main Features
 
-- Gestión de jugadores, entrenadores y equipos
-- Creación y edición de jornadas
-- Registro de asistencia y convocatorias
-- Estadísticas de jugadores y equipos
-- Vista calendario con eventos y partidos
-- Editor de formaciones tácticas
-- Detalles completos por jornada y jugador
+- Management of players, coaches, and teams
+- Creation and editing of matchdays
+- Attendance tracking and match call-ups
+- Player and team statistics
+- Calendar view with events and matches
+- Tactical formation editor
+- Detailed view per matchday and player
 
 ---
 
-## 🎥 Capturas de pantalla
+## 🎥 Screenshots
 
-| Portada                                  | Selección de equipo                             | Calendario                            |
-|------------------------------------------|-------------------------------------------------|---------------------------------------|
-| ![portada](images/01_splash.png)         | ![seleccion](images/02_select_team.png)         | ![calendario](images/03_calendar.png) |
+| Splash Screen                     | Team Selection	                    | Calendar View                          |
+|-----------------------------------|------------------------------------|-------------------------------------|
+| ![splash](images/01_splash.png)   | ![team](images/02_select_team.png) | ![calendar](images/03_calendar.png) |
 
-| Estadísticas Equipo                      | Estadísticas Jugador                            | Jornadas                              |
-|------------------------------------------|-------------------------------------------------|---------------------------------------|
-| ![estadisticas](images/09_teamStats.png) | ![detalles jugador](images/11_playerDetail.png) | ![partidos](images/08_matchday.png)   |
+| Team Stats                               | Player Stats                                  | Jornadas                             |
+|------------------------------------------|-----------------------------------------------|--------------------------------------|
+| ![estadisticas](images/09_teamStats.png) | ![player_details](images/11_playerDetail.png) | ![matchdays](images/08_matchday.png) |
 
-| Eventos                               | Asistencia                              | Pizarra táctica                        |
-|---------------------------------------|-----------------------------------------|----------------------------------------|
-| ![portada](images/04_eventDetail.png) | ![asistencia](images/05_absence_ok.png) | ![formacion](images/12_formations.png) |
+| Events Detail                        | Attendance                              | Tactical Board                          |
+|--------------------------------------|-----------------------------------------|-----------------------------------------|
+| ![events](images/04_eventDetail.png) | ![attendance](images/05_absence_ok.png) | ![formations](images/12_formations.png) |
 ---
 
-## 🏁 Cómo empezar
+## 🏁 Getting Started
 
 ```bash
 git clone https://github.com/TuUsuario/PlayCoach.git

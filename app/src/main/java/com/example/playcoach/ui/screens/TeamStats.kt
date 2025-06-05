@@ -223,16 +223,47 @@ fun StatsCardsSection(data: TeamStatsData) {
 
 @Composable
 fun ChartSection(data: TeamStatsData) {
-    Text(
-        text = "Gráfica Resultados",
-        fontWeight = FontWeight.Bold,
-        color = Color(0xFF00205B),
-        fontSize = 15.sp,
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
-    WinDrawLossPieChart(data.wins, data.draws, data.losses)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Gráfica Resultados",
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF00205B),
+            fontSize = 15.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            WinDrawLossPieChart(data.wins, data.draws, data.losses)
+            ChartLegend()
+        }
+    }
 }
 
+@Composable
+fun ChartLegend() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        LegendItem(color = Color(0xFF4CAF50), label = "Victoria")
+        LegendItem(color = Color(0xFFFFC107), label = "Empate")
+        LegendItem(color = Color(0xFFF44336), label = "Derrota")
+    }
+}
+
+@Composable
+fun LegendItem(color: Color, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Canvas(modifier = Modifier.size(16.dp)) {
+            drawCircle(color = color)
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = label, fontSize = 14.sp, color = Color.DarkGray)
+    }
+}
 
 @Composable
 fun StatsCard(title: String, value: String, color: Color, modifier: Modifier = Modifier) {
