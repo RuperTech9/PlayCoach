@@ -327,153 +327,69 @@ fun TacticalBoard(
         }
     }
 }
+
 fun getPredefinedFormationPositions(
     name: String,
     teamPlayers: List<PlayerEntity>,
     widthDp: Dp,
     heightDp: Dp
 ): List<Pair<Int, DpOffset>> {
-    return when (name) {
-        "3-4-3" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 11f to 62.5f
-                index == 1 -> 43f to 62.5f
-                index == 2 -> 75f to 62.5f
-                index == 3 -> 5f to 43.7f
-                index == 4 -> 25f to 43.7f
-                index == 5 -> 61f to 43.7f
-                index == 6 -> 81f to 43.7f
-                index == 7 -> 11.1f to 25f
-                index == 8 -> 43f to 25f
-                else -> 72.2f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
+    val portero = teamPlayers.find { it.position == "Portero" }
+    val jugadoresCampo = teamPlayers.filterNot { it == portero }.take(10)
 
-        "3-5-2" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 11f to 62.5f
-                index == 1 -> 43f to 62.5f
-                index == 2 -> 75f to 62.5f
-                index == 3 -> 5f to 43.7f
-                index == 4 -> 25f to 43.7f
-                index == 5 -> 43f to 35f
-                index == 6 -> 61f to 43.7f
-                index == 7 -> 81f to 43.7f
-                index == 8 -> 25f to 25f
-                else -> 61f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
+    val formaciones = mapOf(
+        "3-4-3" to listOf(
+            20f to 70f, 43f to 70f, 66f to 70f,
+            10f to 45f, 30.5f to 42f, 56f to 42f, 76f to 45f,
+            20f to 22f, 43f to 20f, 66f to 22f
+        ),
+        "3-5-2" to listOf(
+            20f to 70f, 43f to 70f, 70f to 70f,
+            10f to 44f, 27.5f to 52f, 43f to 41f, 60f to 52f, 76f to 44f,
+            33f to 22f, 55f to 22f
+        ),
+        "4-4-2" to listOf(
+            10f to 70f, 30f to 70f, 56f to 70f, 76f to 70f,
+            10f to 45f, 30.5f to 45f, 56f to 45f, 76f to 45f,
+            32f to 20f, 55f to 20f
+        ),
+        "4-3-3" to listOf(
+            10f to 70f, 30f to 70f, 56f to 70f, 76f to 70f,
+            15f to 45f, 43f to 42f, 75f to 45f,
+            19f to 22f, 43f to 20f, 70f to 22f
+        ),
+        "4-5-1" to listOf(
+            10f to 70f, 30f to 70f, 56f to 70f, 76f to 70f,
+            10f to 44f, 27.5f to 52f, 43f to 41f, 60f to 52f, 76f to 44f,
+            43f to 20f
+        ),
+        "5-3-2" to listOf(
+            5f to 70f, 22f to 70f, 43f to 68f, 64f to 70f, 81f to 70f,
+            15f to 45f, 43f to 38f, 75f to 45f,
+            32f to 20f, 55f to 20f
+        ),
+        "5-4-1" to listOf(
+            5f to 70f, 22f to 70f, 43f to 68f, 64f to 70f, 81f to 70f,
+            8f to 39f, 27.5f to 44f, 60f to 44f, 80f to 39f,
+            43f to 20f
+        )
+    )
 
-        "4-4-2" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 5f to 62.5f
-                index == 1 -> 26f to 62.5f
-                index == 2 -> 61f to 62.5f
-                index == 3 -> 81f to 62.5f
-                index == 4 -> 5f to 43.7f
-                index == 5 -> 25f to 43.7f
-                index == 6 -> 61f to 43.7f
-                index == 7 -> 81f to 43.7f
-                index == 8 -> 25f to 25f
-                else -> 61f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
+    val posiciones = formaciones[name] ?: return emptyList()
 
-        "4-3-3" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 5f to 62.5f
-                index == 1 -> 26f to 62.5f
-                index == 2 -> 61f to 62.5f
-                index == 3 -> 81f to 62.5f
-                index == 4 -> 19f to 43.7f
-                index == 5 -> 43f to 43.7f
-                index == 6 -> 68f to 43.7f
-                index == 7 -> 11.1f to 25f
-                index == 8 -> 43f to 25f
-                else -> 72.2f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
-
-        "4-5-1" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 5f to 62.5f
-                index == 1 -> 26f to 62.5f
-                index == 2 -> 61f to 62.5f
-                index == 3 -> 81f to 62.5f
-                index == 4 -> 5f to 43.7f
-                index == 5 -> 25f to 43.7f
-                index == 6 -> 43f to 35f
-                index == 7 -> 61f to 43.7f
-                index == 8 -> 81f to 43.7f
-                else -> 43f to 20f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
-
-        "5-3-2" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 5f to 62.5f
-                index == 1 -> 24f to 62.5f
-                index == 2 -> 43f to 62.5f
-                index == 3 -> 62f to 62.5f
-                index == 4 -> 81f to 62.5f
-                index == 5 -> 22f to 45f
-                index == 6 -> 43f to 40f
-                index == 7 -> 64f to 45f
-                index == 8 -> 25f to 25f
-                else -> 61f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
-
-        "5-4-1" -> teamPlayers.take(11).mapIndexed { index, player ->
-            val (xPercent, yPercent) = when {
-                player.position == "Portero" -> 43f to 79.1f
-                index == 0 -> 5f to 62.5f
-                index == 1 -> 24f to 62.5f
-                index == 2 -> 43f to 62.5f
-                index == 3 -> 62f to 62.5f
-                index == 4 -> 81f to 62.5f
-                index == 5 -> 5f to 43.7f
-                index == 6 -> 25f to 43.7f
-                index == 7 -> 61f to 43.7f
-                index == 8 -> 81f to 43.7f
-                else -> 43f to 25f
-            }
-            player.number to DpOffset(
-                (xPercent / 100f) * widthDp,
-                (yPercent / 100f) * heightDp
-            )
-        }
-
-        else -> emptyList()
+    val campo = jugadoresCampo.mapIndexed { index, player ->
+        player.number to DpOffset(
+            (posiciones[index].first / 100f) * widthDp,
+            (posiciones[index].second / 100f) * heightDp
+        )
     }
+
+    val porteroOffset = portero?.let {
+        it.number to DpOffset(
+            (43f / 100f) * widthDp,
+            (85f / 100f) * heightDp
+        )
+    }
+
+    return if (porteroOffset != null) listOf(porteroOffset) + campo else campo
 }
