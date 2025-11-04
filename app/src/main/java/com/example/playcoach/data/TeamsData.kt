@@ -48,7 +48,7 @@ object TeamsData {
                 // DEFENSAS
                 PlayerInfo(33, "Sergio", "Menéndez Abad", "Bullito", "Jugador"),
                 PlayerInfo(30, "Gonzalo", "Lorite Regalado", "Gonzalo", "Jugador"),
-                PlayerInfo(17, "Cristobal", "Salazar", "Cristobal", "Jugador"),
+                PlayerInfo(24, "Cristobal", "Salazar", "Cristobal", "Jugador"),
                 PlayerInfo(29, "Jaime", "Godino Perejón", "Jaime", "Jugador"),
                 PlayerInfo(53, "Gabriel", "Benites Miranda", "Gabo", "Jugador"),
 
@@ -65,7 +65,7 @@ object TeamsData {
                 PlayerInfo(43,  "Álvaro", "Mata Salamero", "Álvaro", "Jugador"),
 
                 // DELANTEROS
-                PlayerInfo(50, "Jose Pablo", "Revuelta Oviawe", "Pablo", "Jugador"),
+                PlayerInfo(55, "Jose Pablo", "Revuelta Oviawe", "Pablo", "Jugador"),
                 PlayerInfo(31, "Martín", "Garde Rodríguez", "Martín", "Jugador"),
                 PlayerInfo(36,  "Jorge", "Gorrón Robledillo", "Jorge", "Jugador"),
                 PlayerInfo(28,  "Neithan", "Alonso Nieves", "Neithan", "Jugador"),
@@ -85,24 +85,29 @@ object TeamsData {
     )
 
     private val imagesJuvenilB = mapOf(
-        4  to R.drawable.ic_jugador,
-        5  to R.drawable.infantil_a_ivan,
-        6  to R.drawable.infantil_a_ibra,
-        7  to R.drawable.infantil_a_mendez,
-        8  to R.drawable.infantil_a_martin,
-        9  to R.drawable.infantil_a_rodri,
-        10 to R.drawable.infantil_a_caneque,
-        11 to R.drawable.infantil_a_jimenez,
-        12 to R.drawable.ic_jugador,
-        13 to R.drawable.infantil_a_jordan,
-        14 to R.drawable.ic_jugador,
-        17 to R.drawable.infantil_a_ruben,
-        19 to R.drawable.infantil_a_castro,
-        23 to R.drawable.infantil_a_nico,
-        29 to R.drawable.infantil_a_marcos,
-        33 to R.drawable.infantil_a_aitor,
-        34 to R.drawable.infantil_a_diego,
-        41 to R.drawable.infantil_a_valen
+        12  to R.drawable.ic_jugador,
+        23  to R.drawable.ic_jugador,
+        24  to R.drawable.ic_jugador,
+        27  to R.drawable.ic_jugador,
+        28  to R.drawable.ic_jugador,
+        29  to R.drawable.ic_jugador,
+        30  to R.drawable.ic_jugador,
+        31  to R.drawable.ic_jugador,
+        32 to R.drawable.ic_jugador,
+        33 to R.drawable.ic_jugador,
+        34 to R.drawable.ic_jugador,
+        35 to R.drawable.ic_jugador,
+        36 to R.drawable.ic_jugador,
+        37 to R.drawable.ic_jugador,
+        38 to R.drawable.ic_jugador,
+        39 to R.drawable.ic_jugador,
+        43 to R.drawable.ic_jugador,
+        44 to R.drawable.ic_jugador,
+        45 to R.drawable.ic_jugador,
+        46 to R.drawable.ic_jugador,
+        49 to R.drawable.ic_jugador,
+        53 to R.drawable.ic_jugador,
+        55 to R.drawable.ic_jugador
     )
     private val coachImagesJuvenilB = mapOf(
         "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_primer_entrenador,
@@ -181,7 +186,7 @@ object TeamsData {
             time = "00:00h",
             date = "2025-11-09",
             homeTeam = "A.D. Cadalso",
-            awayTeam = "Infantil A",
+            awayTeam = "Juvenil B",
             homeGoals = 0,
             awayGoals = 0,
             summary = "",

@@ -85,11 +85,15 @@ fun SelectTeam(
         val teams by teamViewModel.teams.collectAsState()
 
         val customOrder = listOf(
-            "Chupetines", "Prebenjamín A", "Prebenjamín B",
+            "Chupetines",
+            "Prebenjamín A", "Prebenjamín B",
             "Benjamín A", "Benjamín B", "Benjamín C",
             "Alevín A", "Alevín B", "Alevín C",
-            "Juvenil B", "Infantil B", "Infantil C",
-            "Cadete A", "Cadete B", "Juvenil", "Féminas", "Senior"
+            "Infantil A", "Infantil B", "Infantil C",
+            "Cadete A", "Cadete B",
+            "Juvenil A", "Juvenil B",
+            "Féminas",
+            "Senior"
         )
 
         val orderedTeams = remember(teams) {
