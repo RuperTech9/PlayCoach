@@ -88,7 +88,7 @@ fun SelectTeam(
             "Chupetines", "Prebenjamín A", "Prebenjamín B",
             "Benjamín A", "Benjamín B", "Benjamín C",
             "Alevín A", "Alevín B", "Alevín C",
-            "Infantil A", "Infantil B", "Infantil C",
+            "Juvenil B", "Infantil B", "Infantil C",
             "Cadete A", "Cadete B", "Juvenil", "Féminas", "Senior"
         )
 
