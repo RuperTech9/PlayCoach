@@ -85,33 +85,33 @@ object TeamsData {
     )
 
     private val imagesJuvenilB = mapOf(
-        12  to R.drawable.ic_jugador,
-        23  to R.drawable.ic_jugador,
-        24  to R.drawable.ic_jugador,
-        27  to R.drawable.ic_jugador,
+        12  to R.drawable.juvenil_b_pedro,
+        23  to R.drawable.juvenil_b_youssef,
+        24  to R.drawable.juvenil_b_cristobal,
+        27  to R.drawable.juvenil_b_cano,
         28  to R.drawable.ic_jugador,
         29  to R.drawable.ic_jugador,
-        30  to R.drawable.ic_jugador,
-        31  to R.drawable.ic_jugador,
+        30  to R.drawable.juvenil_b_gonzalo,
+        31  to R.drawable.juvenil_b_martin,
         32 to R.drawable.ic_jugador,
-        33 to R.drawable.ic_jugador,
+        33 to R.drawable.juvenil_b_sergio,
         34 to R.drawable.ic_jugador,
-        35 to R.drawable.ic_jugador,
-        36 to R.drawable.ic_jugador,
-        37 to R.drawable.ic_jugador,
-        38 to R.drawable.ic_jugador,
+        35 to R.drawable.juvenil_b_juanjo,
+        36 to R.drawable.juvenil_b_jorge,
+        37 to R.drawable.juvenil_b_izan,
+        38 to R.drawable.juvenil_b_lujan,
         39 to R.drawable.ic_jugador,
-        43 to R.drawable.ic_jugador,
-        44 to R.drawable.ic_jugador,
+        43 to R.drawable.juvenil_b_alvaro,
+        44 to R.drawable.juvenil_b_quevedo,
         45 to R.drawable.ic_jugador,
-        46 to R.drawable.ic_jugador,
-        49 to R.drawable.ic_jugador,
-        53 to R.drawable.ic_jugador,
-        55 to R.drawable.ic_jugador
+        46 to R.drawable.juvenil_b_piqueras,
+        49 to R.drawable.juvenil_b_gallardo,
+        53 to R.drawable.juvenil_b_gabri,
+        55 to R.drawable.juvenil_b_pablo
     )
     private val coachImagesJuvenilB = mapOf(
-        "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_primer_entrenador,
-        "MARIO RUPÉREZ LÓPEZ" to R.drawable.infantil_a_segundo_entrenador
+        "ALEJANDRO RUPÉREZ LÓPEZ" to R.drawable.juvenil_b_primer_entrenador,
+        "MARIO RUPÉREZ LÓPEZ" to R.drawable.juvenil_b_segundo_entrenador
     )
 
     fun getCoachImageForTeamAndName(team: String, fullName: String): Int {
