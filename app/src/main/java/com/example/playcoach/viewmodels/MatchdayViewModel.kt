@@ -18,7 +18,7 @@ class MatchdayViewModel @Inject constructor(
     private val repository: MatchdayRepository
 ) : ViewModel() {
 
-    private val _selectedTeam = MutableStateFlow("Infantil A")
+    private val _selectedTeam = MutableStateFlow("Juvenil B")
 
     fun updateSelectedTeam(name: String) {
         _selectedTeam.value = name

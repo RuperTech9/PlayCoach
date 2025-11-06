@@ -76,7 +76,7 @@ fun PlayerStatsDialog(
     }
 
     fun validateInt(input: String): Boolean = input.toIntOrNull() != null
-    fun validateMinutes(input: String): Boolean = input.toIntOrNull()?.let { it in 0..70 } ?: false
+    fun validateMinutes(input: String): Boolean = input.toIntOrNull()?.let { it in 0..90 } ?: false
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -116,7 +116,7 @@ fun PlayerStatsDialog(
                 OutlinedValidatedField(assistsText, { assistsText = it }, "Asistencias", assistsError, ::validateInt, "Solo números enteros")
                 OutlinedValidatedField(yellowCardsText, { yellowCardsText = it }, "Tarjetas Amarillas", yellowError, ::validateInt, "Solo números enteros")
                 OutlinedValidatedField(redCardsText, { redCardsText = it }, "Tarjetas Rojas", redError, ::validateInt, "Solo números enteros")
-                OutlinedValidatedField(minutesText, { minutesText = it }, "Minutos Jugados", minutesError, ::validateMinutes, "Debe estar entre 0 y 70")
+                OutlinedValidatedField(minutesText, { minutesText = it }, "Minutos Jugados", minutesError, ::validateMinutes, "Debe estar entre 0 y 90")
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("¿Titular?", modifier = Modifier.weight(1f))
